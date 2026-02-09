@@ -3,20 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Class Quiz (Auto-Marking)</title>
+  <title>Moodle-Style Quiz • Auto-Marking (100 Questions)</title>
   <style>
     :root{
-      --bg:#f6f7fb;
-      --card:#ffffff;
+      --bg:#f5f6f8;
+      --surface:#ffffff;
       --text:#1f2937;
       --muted:#6b7280;
-      --border:#e5e7eb;
-      --purple:#673ab7; /* Google Forms-ish */
-      --purple-2:#7c4dff;
-      --ok:#0f766e;
-      --bad:#b91c1c;
-      --shadow: 0 8px 24px rgba(17,24,39,.08);
-      --radius: 16px;
+      --border:#dfe3ea;
+      --brand:#0f6cbf;         /* Moodle-ish blue */
+      --brand-2:#0b5aa0;
+      --ok:#1b7f3b;
+      --bad:#b42318;
+      --warn:#b45309;
+      --shadow: 0 10px 28px rgba(17,24,39,.10);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
     *{box-sizing:border-box}
     body{
@@ -26,678 +28,958 @@
       color: var(--text);
       line-height:1.4;
     }
+
+    /* Top header */
     .topbar{
-      background: linear-gradient(90deg, var(--purple), var(--purple-2));
-      height:10px;
+      background: var(--brand);
+      color:#fff;
+      padding: 12px 18px;
+      position: sticky;
+      top:0;
+      z-index: 20;
+      box-shadow: 0 6px 18px rgba(0,0,0,.12);
     }
+    .topbar-inner{
+      max-width: 1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .logo{
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.16);
+      display:grid;
+      place-items:center;
+      font-weight: 900;
+      letter-spacing:.5px;
+    }
+    .brand h1{
+      font-size: 14px;
+      margin:0;
+      font-weight: 800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand .sub{
+      font-size: 12px;
+      opacity:.9;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Timer pill */
+    .timer-pill{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(0,0,0,.10);
+      border-radius: 999px;
+      font-weight: 800;
+      white-space:nowrap;
+    }
+    .timer-pill .label{ font-weight:700; opacity:.95; font-size: 12px; }
+    .timer-pill .time{ font-family: var(--mono); font-size: 14px; }
+    .timer-pill.warn{ background: rgba(255,170,0,.18); border-color: rgba(255,170,0,.30); }
+    .timer-pill.danger{ background: rgba(255,0,0,.16); border-color: rgba(255,0,0,.30); }
+
+    /* Layout */
     .wrap{
-      max-width: 920px;
-      margin: 22px auto 56px;
+      max-width: 1100px;
+      margin: 18px auto 64px;
       padding: 0 14px;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap: 14px;
     }
-    .card{
-      background: var(--card);
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+
+    /* Left: navigation */
+    .side{
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position: sticky;
+      top: 68px;
+      align-self: start;
+    }
+    @media (max-width: 980px){
+      .side{ position: static; }
+    }
+    .side-head{
+      padding: 14px 14px 10px;
+      border-bottom:1px solid var(--border);
+      background:#fbfcfe;
+    }
+    .side-title{
+      margin:0;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .side-sub{ margin:6px 0 0; font-size: 12px; color: var(--muted); }
+
+    .ident{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      display:grid;
+      gap:10px;
+    }
+    .field label{ font-size: 12px; color: var(--muted); display:block; margin:0 0 6px; }
+    .field input{
+      width:100%;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      outline:none;
+      background:#fff;
+      font-size: 14px;
+    }
+    .field input:focus{
+      border-color: rgba(15,108,191,.45);
+      box-shadow: 0 0 0 4px rgba(15,108,191,.12);
+    }
+
+    .nav{
+      padding: 12px 14px 14px;
+    }
+    .legend{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom:10px;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .dot.todo{ background:#cbd5e1; }
+    .dot.done{ background: var(--ok); }
+    .dot.flag{ background: var(--warn); }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .qbtn{
+      border: 1px solid var(--border);
+      background:#fff;
+      border-radius: 12px;
+      padding: 8px 0;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .03s ease;
+    }
+    .qbtn:active{ transform: scale(.99); }
+    .qbtn.todo{ background:#fff; }
+    .qbtn.done{ border-color: rgba(27,127,59,.35); background: rgba(27,127,59,.06); color: var(--ok); }
+    .qbtn.flag{ border-color: rgba(180,83,9,.35); background: rgba(180,83,9,.08); color: var(--warn); }
+    .qbtn.current{ outline: 3px solid rgba(15,108,191,.18); border-color: rgba(15,108,191,.45); }
+
+    .side-actions{
+      padding: 12px 14px 14px;
+      border-top: 1px solid var(--border);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      background:#fbfcfe;
+    }
+
+    /* Main content */
+    .main{
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .header{
-      padding: 22px 22px 14px;
-      border-left: 10px solid var(--purple);
+    .main-head{
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background:#fbfcfe;
     }
-    .title{
-      font-size: 22px;
-      font-weight: 750;
-      margin: 0 0 6px;
+    .main-title{
+      margin:0;
+      font-size: 18px;
+      font-weight: 950;
     }
-    .meta{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 10px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background:#fafafa;
-    }
-    .content{ padding: 16px 22px 22px; }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-      margin: 12px 0 6px;
-    }
-    @media (max-width: 720px){
-      .grid{grid-template-columns:1fr}
-    }
-    label{
+    .main-sub{
+      margin:6px 0 0;
       font-size: 13px;
       color: var(--muted);
-      display:block;
-      margin-bottom:6px;
-    }
-    input[type="text"], .select{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 12px;
-      border:1px solid var(--border);
-      outline:none;
-      background:#fff;
-      font-size: 14px;
-    }
-    input[type="text"]:focus{
-      border-color: rgba(103,58,183,.45);
-      box-shadow: 0 0 0 4px rgba(103,58,183,.12);
-    }
-    .note{
-      font-size: 13px;
-      color: var(--muted);
-      margin: 10px 0 0;
     }
 
-    .q{
-      margin-top: 14px;
+    .panel{
+      padding: 14px 18px 18px;
+    }
+
+    .qcard{
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      background:#fff;
       overflow:hidden;
+      background:#fff;
     }
     .qhead{
-      padding: 14px 16px;
+      padding: 14px 14px 10px;
       display:flex;
       justify-content:space-between;
-      align-items:flex-start;
       gap:10px;
-      background: #fafafa;
-      border-bottom:1px solid var(--border);
+      align-items:flex-start;
+      background:#fafcff;
+      border-bottom: 1px solid var(--border);
     }
     .qnum{
-      font-weight:750;
-      color:#111827;
-      min-width:72px;
-    }
-    .qtext{
-      flex:1;
-      font-weight:650;
+      font-weight: 950;
+      color:#0b2d4c;
     }
     .qpts{
-      color: var(--muted);
       font-size: 12px;
+      color: var(--muted);
       white-space:nowrap;
       margin-top:2px;
     }
-    .qbody{ padding: 10px 16px 14px; }
+    .qtext{ font-weight: 800; margin-top: 6px; }
+
+    .qbody{ padding: 10px 14px 14px; }
     .opt{
       display:flex;
       gap:10px;
-      align-items:flex-start;
-      padding: 10px 10px;
+      padding: 10px;
       border-radius: 12px;
       cursor:pointer;
     }
-    .opt:hover{ background:#f7f5ff; }
+    .opt:hover{ background:#f1f7ff; }
     .opt input{ margin-top:3px; }
     .opt span{ flex:1; }
-    .divider{ height:1px; background:var(--border); margin:14px 0; }
 
-    .actions{
+    .tools{
       display:flex;
+      justify-content:space-between;
       gap:10px;
       flex-wrap:wrap;
-      margin-top: 14px;
+      margin-top: 12px;
+      align-items:center;
     }
+
     button{
       border:0;
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 900;
       cursor:pointer;
       font-size: 14px;
     }
-    .primary{
-      background: var(--purple);
-      color:#fff;
-    }
-    .primary:hover{ filter: brightness(.95); }
-    .ghost{
-      background:#fff;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
+    .primary{ background: var(--brand); color:#fff; }
+    .primary:hover{ filter: brightness(.96); }
+    .ghost{ background:#fff; border: 1px solid var(--border); color: var(--text); }
     .ghost:hover{ background:#fafafa; }
-    .danger{
-      background:#fff;
-      border:1px solid rgba(185,28,28,.25);
-      color: var(--bad);
-    }
+    .danger{ background:#fff; border: 1px solid rgba(180,35,24,.25); color: var(--bad); }
     .danger:hover{ background:#fff5f5; }
 
-    .footer{
-      display:flex;
-      justify-content:space-between;
+    .small{ font-size: 12px; color: var(--muted); }
+
+    .flagbtn{
+      display:inline-flex;
       align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top: 16px;
-      color: var(--muted);
-      font-size: 13px;
+      gap:8px;
+      border: 1px solid var(--border);
+      background:#fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 900;
+      cursor:pointer;
     }
-    .timer{
-      font-weight:800;
-      color:#111827;
-    }
+    .flagbtn.flagged{ border-color: rgba(180,83,9,.35); background: rgba(180,83,9,.08); color: var(--warn); }
 
     .result{
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: var(--radius);
+      margin-top: 14px;
       border: 1px solid var(--border);
-      background: #fcfcff;
+      border-radius: var(--radius);
+      padding: 14px;
+      background:#fbfcff;
     }
-    .scoreline{
+    .score{
       display:flex;
       justify-content:space-between;
-      align-items:center;
       gap:10px;
       flex-wrap:wrap;
+      align-items:center;
     }
-    .bigscore{
-      font-size: 20px;
-      font-weight: 850;
-    }
+    .score .big{ font-size: 20px; font-weight: 1000; }
     .badge{
       display:inline-flex;
       align-items:center;
       padding: 6px 10px;
-      border-radius:999px;
-      font-weight:800;
+      border-radius: 999px;
+      font-weight: 1000;
       font-size: 12px;
       border: 1px solid var(--border);
       background:#fff;
     }
-    .badge.ok{ color: var(--ok); border-color: rgba(15,118,110,.25); background: rgba(15,118,110,.06); }
-    .badge.bad{ color: var(--bad); border-color: rgba(185,28,28,.25); background: rgba(185,28,28,.06); }
+    .badge.ok{ color: var(--ok); border-color: rgba(27,127,59,.25); background: rgba(27,127,59,.06); }
+    .badge.bad{ color: var(--bad); border-color: rgba(180,35,24,.25); background: rgba(180,35,24,.06); }
 
-    .review{
-      margin-top: 10px;
-      font-size: 13px;
-      color: var(--muted);
+    details.review{ margin-top: 12px; }
+    details.review summary{
+      cursor:pointer;
+      font-weight: 950;
+      color:#0b2d4c;
     }
-    .correct{ color: var(--ok); font-weight: 750; }
-    .wrong{ color: var(--bad); font-weight: 750; }
-    .small{ font-size:12px; color: var(--muted); }
+    .review-list{ margin: 10px 0 0; padding-left: 18px; }
+    .review-list li{ margin: 10px 0; }
+    .correct{ color: var(--ok); font-weight: 900; }
+    .wrong{ color: var(--bad); font-weight: 900; }
 
-    /* Print-friendly */
     @media print{
-      .actions, .footer, .timer, .topbar { display:none !important; }
-      body { background:#fff; }
-      .card { box-shadow:none; }
+      .topbar,.side,.tools,.flagbtn{ display:none !important; }
+      body{ background:#fff; }
+      .wrap{ grid-template-columns: 1fr; }
+      .main{ box-shadow:none; }
     }
   </style>
 </head>
 
 <body>
-  <div class="topbar"></div>
-  <div class="wrap">
-    <div class="card">
-      <div class="header">
-        <h1 class="title" id="quizTitle">Technology / Coding Quiz (Auto-Marking)</h1>
-        <div class="meta">
-          <div class="pill">🕒 <span id="durationText">35 min</span></div>
-          <div class="pill">✅ MCQ • Self-marking</div>
-          <div class="pill">📅 <span id="dateText"></span></div>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo">M</div>
+        <div style="min-width:0;">
+          <h1 id="courseTitle">Course: Technology / Coding</h1>
+          <div class="sub" id="quizTitle">Quiz: Auto-Marking MCQ (100 Questions)</div>
         </div>
-        <p class="note" id="quizNote">
-          Instructions: Place completed homework on the teacher’s desk, then complete this quiz silently. No talking.
-        </p>
+      </div>
+      <div id="timerPill" class="timer-pill" title="Timer (auto-submit at 0)">
+        <span class="label">Time left</span>
+        <span class="time" id="timer">35:00</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <aside class="side" aria-label="Quiz navigation">
+      <div class="side-head">
+        <p class="side-title">Quiz navigation</p>
+        <p class="side-sub" id="navSub">Total: <strong>100</strong> questions • Auto-submit at 0</p>
       </div>
 
-      <div class="content">
-        <div class="grid">
-          <div>
-            <label for="learnerName">Learner name</label>
-            <input id="learnerName" type="text" placeholder="Type your name..." autocomplete="off" />
-          </div>
-          <div>
-            <label for="className">Class</label>
-            <input id="className" type="text" placeholder="e.g., 7B" autocomplete="off" />
-          </div>
+      <div class="ident">
+        <div class="field">
+          <label for="learnerName">Learner name</label>
+          <input id="learnerName" type="text" placeholder="Type your name" autocomplete="off" />
         </div>
-
-        <div class="divider"></div>
-
-        <div id="questions"></div>
-
-        <div class="actions">
-          <button class="primary" id="submitBtn">Submit</button>
-          <button class="ghost" id="saveBtn" type="button">Save Progress</button>
-          <button class="danger" id="resetBtn" type="button">Reset</button>
+        <div class="field">
+          <label for="className">Class</label>
+          <input id="className" type="text" placeholder="e.g., 7B" autocomplete="off" />
         </div>
+      </div>
 
-        <div class="footer">
-          <div class="timer">Time left: <span id="timer">35:00</span></div>
-          <div class="small">Tip: Save Progress works on this device/browser.</div>
+      <div class="nav">
+        <div class="legend">
+          <span><span class="dot todo"></span> Not answered</span>
+          <span><span class="dot done"></span> Answered</span>
+          <span><span class="dot flag"></span> Flagged</span>
+        </div>
+        <div class="grid" id="navGrid"></div>
+      </div>
+
+      <div class="side-actions">
+        <button class="primary" id="finishAttemptBtn" type="button">Finish attempt…</button>
+        <button class="ghost" id="saveBtn" type="button">Save</button>
+        <button class="danger" id="resetBtn" type="button">Reset</button>
+        <div class="small">Save stores progress on this device only.</div>
+      </div>
+    </aside>
+
+    <section class="main" aria-label="Question panel">
+      <div class="main-head">
+        <h2 class="main-title" id="mainTitle">Attempt: Technology / Coding MCQ (100 Questions)</h2>
+        <p class="main-sub" id="mainSub">Rules: Silent work. No talking. Auto-submit when time runs out.</p>
+      </div>
+
+      <div class="panel">
+        <div class="qcard" id="qcard"></div>
+
+        <div class="tools">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button class="ghost" id="prevBtn" type="button">◀ Previous</button>
+            <button class="ghost" id="nextBtn" type="button">Next ▶</button>
+            <button class="flagbtn" id="flagBtn" type="button">⚑ Flag question</button>
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button class="primary" id="submitBtn" type="button">Submit all and finish</button>
+            <span class="small">Autosave every 15 seconds.</span>
+          </div>
         </div>
 
         <div id="result" class="result" style="display:none;"></div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
 <script>
-/* ====== QUICK EDITS (Fred) ====== */
-const QUIZ = {
-  title: "Technology / Coding Quiz (Auto-Marking)",
-  durationMinutes: 35, // set to 50 if you want them busy the whole period
-  note: "Instructions: Place completed homework on the teacher’s desk, then complete this quiz silently. No talking.",
-  shuffleQuestions: false,
-  shuffleOptions: false,
-  showAnswersAfterSubmit: true, // set false to only show score
-  requireName: true,
-  requireClass: true,
-  questions: [
-    { pts: 2, text: "What is an algorithm?", options: [
-      "A computer",
-      "A step-by-step set of instructions",
-      "A robot",
-      "A mistake"
-    ], answer: 1 },
+  /* =========================
+     Fred: QUICK SETTINGS
+     ========================= */
+  const QUIZ = {
+    courseTitle: "Course: Technology / Coding",
+    quizTitle: "Quiz: Auto-Marking MCQ (100 Questions)",
+    attemptTitle: "Attempt: Technology / Coding MCQ (100 Questions)",
+    instructions: "Rules: Silent work. No talking. Auto-submit when time runs out.",
 
-    { pts: 2, text: "Which of the following is an example of input?", options: [
-      "Speaker sound",
-      "Printer page",
-      "Mouse click",
-      "Monitor screen"
-    ], answer: 2 },
+    durationMinutes: 35,
+    autosaveSeconds: 15,
+    requireName: true,
+    requireClass: true,
 
-    { pts: 2, text: "Which device is mainly used for output?", options: [
-      "Keyboard",
-      "Mouse",
-      "Monitor",
-      "Microphone"
-    ], answer: 2 },
+    showReviewAfterSubmit: true,
 
-    { pts: 2, text: "What does CPU stand for?", options: [
-      "Central Program Unit",
-      "Central Processing Unit",
-      "Computer Power Unit",
-      "Control Processing User"
-    ], answer: 1 },
+    // 100 questions x 1 mark = 100
+    questions: [
+      /* ===== Algorithms & Coding Basics (1–25) ===== */
+      { pts:1, text:"What is an algorithm?", options:["A computer","A step-by-step set of instructions","A robot","A mistake"], answer:1 },
+      { pts:1, text:"A loop is used to…", options:["Repeat instructions","Delete files","Turn off a computer","Open a website"], answer:0 },
+      { pts:1, text:"Debugging means…", options:["Finding and fixing mistakes","Making the screen brighter","Charging a laptop","Printing a page"], answer:0 },
+      { pts:1, text:"Which is a block-coding tool for learners?", options:["Scratch","PowerPoint","Calculator","Camera"], answer:0 },
+      { pts:1, text:"Which comes first when solving a problem?", options:["Plan","Copy","Guess","Skip"], answer:0 },
+      { pts:1, text:"What is a program?", options:["A set of instructions for a computer","A type of keyboard","A battery","A monitor"], answer:0 },
+      { pts:1, text:"An IF statement is used to…", options:["Make a choice/decision","Print a document","Charge a device","Open the Start menu"], answer:0 },
+      { pts:1, text:"Which is an example of a condition?", options:["If score is > 10","Draw a circle","Press spacebar","Open Chrome"], answer:0 },
+      { pts:1, text:"Which is an example of output?", options:["Sound from speakers","Mouse click","Keyboard typing","Touchpad tap"], answer:0 },
+      { pts:1, text:"Which is an example of input?", options:["Printer page","Monitor picture","Keyboard key press","Speaker sound"], answer:2 },
+      { pts:1, text:"What does CPU stand for?", options:["Central Processing Unit","Computer Power Unit","Control Program User","Central Print Unit"], answer:0 },
+      { pts:1, text:"A bug in code is a…", options:["Mistake/error","Type of mouse","Good idea","Battery"], answer:0 },
+      { pts:1, text:"Why do we test programs?", options:["To find problems","To make them slower","To delete them","To waste time"], answer:0 },
+      { pts:1, text:"Which is a good coding habit?", options:["Test often","Never save","Skip instructions","Rush"], answer:0 },
+      { pts:1, text:"What does SAVE do?", options:["Stores your work","Deletes your work","Turns off Wi-Fi","Changes the wallpaper"], answer:0 },
+      { pts:1, text:"Which is a sequence?", options:["Steps in order","A random guess","A picture","A battery"], answer:0 },
+      { pts:1, text:"Which word means 'repeat'?", options:["Loop","Stop","Close","Exit"], answer:0 },
+      { pts:1, text:"What is decomposition?", options:["Breaking a big problem into smaller parts","Making a robot faster","Cleaning a laptop","Typing without looking"], answer:0 },
+      { pts:1, text:"Pattern recognition means…", options:["Finding things that repeat","Deleting patterns","Printing patterns","Charging patterns"], answer:0 },
+      { pts:1, text:"Abstraction means…", options:["Focusing on important details","Adding extra details","Making it confusing","Turning off the screen"], answer:0 },
+      { pts:1, text:"Which is an example of an instruction?", options:["Move forward","Blue","Laptop","Triangle"], answer:0 },
+      { pts:1, text:"A flowchart is used to…", options:["Show steps of a process","Play music","Charge devices","Take photos"], answer:0 },
+      { pts:1, text:"In a flowchart, a diamond usually means…", options:["Decision","Start","End","Data"], answer:0 },
+      { pts:1, text:"In a flowchart, a rectangle usually means…", options:["Process/Action","Decision","Start","Arrow"], answer:0 },
+      { pts:1, text:"A variable is like a…", options:["Box that stores information","Type of printer","Mouse pointer","Battery"], answer:0 },
 
-    { pts: 2, text: "A loop in programming is used to…", options: [
-      "Do something once",
-      "Repeat instructions",
-      "Turn off a computer",
-      "Delete a program"
-    ], answer: 1 },
+      /* ===== Typing & typing.com (26–50) ===== */
+      { pts:1, text:"typing.com helps you practise…", options:["Typing","Drawing","Singing","Cooking"], answer:0 },
+      { pts:1, text:"Which key starts a new line?", options:["Enter","Shift","Ctrl","Alt"], answer:0 },
+      { pts:1, text:"Which key makes a space?", options:["Spacebar","Tab","Caps Lock","Esc"], answer:0 },
+      { pts:1, text:"Which key deletes to the LEFT?", options:["Backspace","Delete","Enter","Windows"], answer:0 },
+      { pts:1, text:"Which key deletes to the RIGHT?", options:["Delete","Backspace","Shift","Tab"], answer:0 },
+      { pts:1, text:"Caps Lock is used to…", options:["Type in capitals","Open a file","Print","Save"], answer:0 },
+      { pts:1, text:"Good posture means…", options:["Sit upright","Lie down","Look away","Use one finger"], answer:0 },
+      { pts:1, text:"Accuracy means…", options:["Few mistakes","Very loud typing","Only speed","No punctuation"], answer:0 },
+      { pts:1, text:"Touch typing means…", options:["Typing without looking at keys","Typing with a touchscreen","Typing slowly","Typing in all caps"], answer:0 },
+      { pts:1, text:"Home row includes…", options:["A S D F","Q W E R","Z X C V","1 2 3 4"], answer:0 },
+      { pts:1, text:"Which finger often presses the spacebar?", options:["Thumb","Index","Middle","Little"], answer:0 },
+      { pts:1, text:"Tab key is often used to…", options:["Move to next field/indent","Turn off laptop","Print","Delete a file"], answer:0 },
+      { pts:1, text:"Shift key is used to…", options:["Make capital letters / symbols","Open Start menu","Save","Close"], answer:0 },
+      { pts:1, text:"Why should you keep eyes on the screen?", options:["To build touch-typing","To type slower","To make more errors","To waste time"], answer:0 },
+      { pts:1, text:"Which is a punctuation mark?", options:[".","7","A","Ctrl"], answer:0 },
+      { pts:1, text:"Which key makes a question mark on many keyboards?", options:["Shift + /","Ctrl + ?","Alt + ?","Windows + ?"], answer:0 },
+      { pts:1, text:"Typing speed is usually measured in…", options:["WPM","KM","Volts","Pixels"], answer:0 },
+      { pts:1, text:"If you make a mistake, you should…", options:["Use Backspace and fix it","Ignore it always","Close the laptop","Unplug the charger"], answer:0 },
+      { pts:1, text:"A shortcut is…", options:["A faster way to do something","A kind of mouse","A printer","A battery"], answer:0 },
+      { pts:1, text:"Which shortcut saves in many apps?", options:["Ctrl + S","Ctrl + P","Ctrl + C","Ctrl + V"], answer:0 },
+      { pts:1, text:"Ctrl + C usually means…", options:["Copy","Cut","Close","Caps"], answer:0 },
+      { pts:1, text:"Ctrl + V usually means…", options:["Paste","Print","Pause","Preview"], answer:0 },
+      { pts:1, text:"Ctrl + X usually means…", options:["Cut","Copy","Undo","Redo"], answer:0 },
+      { pts:1, text:"Ctrl + Z usually means…", options:["Undo","Zoom","Zip","Zero"], answer:0 },
+      { pts:1, text:"Ctrl + A usually means…", options:["Select all","Save","Print","Search"], answer:0 },
 
-    { pts: 2, text: "In a flowchart, which shape usually shows a decision?", options: [
-      "Rectangle",
-      "Circle",
-      "Diamond",
-      "Arrow"
-    ], answer: 2 },
+      /* ===== Windows Laptop Basics (51–80) ===== */
+      { pts:1, text:"Windows is a(n)…", options:["Operating system","Browser","Game","Keyboard"], answer:0 },
+      { pts:1, text:"The Windows key usually opens…", options:["Start menu","Camera","Printer","Calculator only"], answer:0 },
+      { pts:1, text:"The touchpad controls the…", options:["Pointer/cursor","Speaker","Battery","Keyboard lights"], answer:0 },
+      { pts:1, text:"The power button is used to…", options:["Turn device on/off","Type letters","Print","Take photos"], answer:0 },
+      { pts:1, text:"Which is safe laptop behaviour?", options:["Keep drinks away","Shake the laptop","Pull the charger to turn off","Hit the keyboard"], answer:0 },
+      { pts:1, text:"A file is…", options:["A saved document or item","A type of mouse","A keyboard key","A battery"], answer:0 },
+      { pts:1, text:"A folder is used to…", options:["Organise files","Play music","Charge the laptop","Change passwords"], answer:0 },
+      { pts:1, text:"Which icon closes a window?", options:["X","□","–","?"], answer:0 },
+      { pts:1, text:"Minimise means…", options:["Hide a window to the taskbar","Delete a file","Turn off Wi-Fi","Print"], answer:0 },
+      { pts:1, text:"Maximise means…", options:["Make the window full screen","Make it smaller","Delete it","Send it to the printer"], answer:0 },
+      { pts:1, text:"Wi-Fi is used to…", options:["Connect to the internet","Charge the battery","Make the screen bigger","Type faster"], answer:0 },
+      { pts:1, text:"A browser is used to…", options:["Visit websites","Charge devices","Write with a pen","Build robots"], answer:0 },
+      { pts:1, text:"Which is a browser?", options:["Google Chrome","Windows","Keyboard","Touchpad"], answer:0 },
+      { pts:1, text:"A password should be…", options:["Kept private","Shared with friends","Written on the desk","Very short"], answer:0 },
+      { pts:1, text:"What does \"Ctrl + S\" do?", options:["Save","Search","Stop","Screenshot"], answer:0 },
+      { pts:1, text:"What does \"Ctrl + P\" do in many apps?", options:["Print","Paste","Pause","Power off"], answer:0 },
+      { pts:1, text:"The taskbar is usually at the…", options:["Bottom of the screen","Top only","Middle","It is invisible"], answer:0 },
+      { pts:1, text:"An app is…", options:["A program you use","A cable","A battery","A folder"], answer:0 },
+      { pts:1, text:"To shut down properly you should…", options:["Use Shut down option","Pull the plug","Close the lid always","Press random keys"], answer:0 },
+      { pts:1, text:"If a laptop is overheating, you should…", options:["Tell the teacher","Cover it with a book","Put it in the sun","Pour water"], answer:0 },
+      { pts:1, text:"A screenshot is a…", options:["Picture of the screen","Type of battery","Robot move","Printer file"], answer:0 },
+      { pts:1, text:"Which key is often used to switch between open apps?", options:["Alt + Tab","Ctrl + S","Shift + Enter","Windows + P"], answer:0 },
+      { pts:1, text:"Volume buttons control…", options:["Sound","Typing speed","Wi-Fi","Battery"], answer:0 },
+      { pts:1, text:"Brightness controls…", options:["How light the screen is","How loud it is","How fast Wi-Fi is","How many files"], answer:0 },
+      { pts:1, text:"A charger is used to…", options:["Recharge the battery","Print pages","Open websites","Type"], answer:0 },
+      { pts:1, text:"Which is hardware?", options:["Keyboard","Windows","Website","Typing.com"], answer:0 },
+      { pts:1, text:"Which is software?", options:["Windows","Mouse","Screen","USB cable"], answer:0 },
+      { pts:1, text:"A USB port is used to…", options:["Plug in devices","Turn on Wi-Fi","Change wallpaper","Delete files"], answer:0 },
+      { pts:1, text:"A mouse pointer is also called a…", options:["Cursor","Battery","Folder","Speaker"], answer:0 },
+      { pts:1, text:"Double-click means…", options:["Click twice quickly","Hold the mouse","Press Enter","Turn off"], answer:0 },
 
-    { pts: 2, text: "What does a sensor do?", options: [
-      "Moves the robot",
-      "Powers the robot",
-      "Detects changes in the environment",
-      "Decorates the robot"
-    ], answer: 2 },
+      /* ===== Sphero Robotics (81–100) ===== */
+      { pts:1, text:"Sphero is a…", options:["Programmable robot ball","Printer","Keyboard","Monitor"], answer:0 },
+      { pts:1, text:"Sphero Edu is used to…", options:["Code Sphero","Cook food","Print","Draw"], answer:0 },
+      { pts:1, text:"When Sphero moves, it uses…", options:["Motors","Ink","Paper","Keys"], answer:0 },
+      { pts:1, text:"A sensor helps a robot…", options:["Detect things","Eat","Sleep","Write"], answer:0 },
+      { pts:1, text:"A loop can make Sphero…", options:["Repeat actions","Lose battery instantly","Break","Freeze always"], answer:0 },
+      { pts:1, text:"To make Sphero stop, you use…", options:["Stop block","Start menu","Caps Lock","Print"], answer:0 },
+      { pts:1, text:"Which is a good robotics skill?", options:["Problem-solving","Guessing","Shouting","Rushing"], answer:0 },
+      { pts:1, text:"If Sphero goes the wrong way, you should…", options:["Check the code","Throw it","Ignore it","Unplug Wi-Fi"], answer:0 },
+      { pts:1, text:"Robots follow…", options:["Instructions","Feelings","Luck","Noise"], answer:0 },
+      { pts:1, text:"What is a safe rule for Sphero use?", options:["Use gently and follow rules","Kick it","Use near water","Throw at friends"], answer:0 },
+      { pts:1, text:"A variable in coding is like a…", options:["Box for information","Keyboard","Printer","Battery"], answer:0 },
+      { pts:1, text:"An event in coding is…", options:["Something that triggers an action","A folder","A cable","A charger"], answer:0 },
+      { pts:1, text:"Which command would best change Sphero colour?", options:["Set colour","Shut down","Print","Save"], answer:0 },
+      { pts:1, text:"A program for Sphero can include…", options:["Move and turn","Cook","Paint walls","Wash"], answer:0 },
+      { pts:1, text:"If a robot is not connecting, you might check…", options:["Bluetooth","Pencil","Ruler","Glue"], answer:0 },
+      { pts:1, text:"Bluetooth is used for…", options:["Short-range wireless connection","Printing","Charging","Typing"], answer:0 },
+      { pts:1, text:"To make Sphero go faster you can…", options:["Increase speed value","Press Caps Lock","Change wallpaper","Print"], answer:0 },
+      { pts:1, text:"To make Sphero turn, you can change…", options:["Direction/heading","Font size","Battery type","Browser"], answer:0 },
+      { pts:1, text:"Robotics helps you learn…", options:["Logic","Only drawing","Only singing","Only sport"], answer:0 },
+      { pts:1, text:"In robotics, 'trial and error' means…", options:["Try, test, improve","Give up","Copy only","Never test"], answer:0 }
+    ]
+  };
 
-    { pts: 2, text: "Which is a programming language/tool used to create programs?", options: [
-      "Microsoft Word",
-      "Scratch",
-      "Google Chrome",
-      "Windows"
-    ], answer: 1 },
+  /* =========================
+     App state
+     ========================= */
+  const $ = (id)=>document.getElementById(id);
+  const STORAGE_KEY = "moodle_like_quiz_100q_v1";
 
-    { pts: 2, text: "Why do we test programs?", options: [
-      "To make them slower",
-      "To find and fix errors (bugs)",
-      "To delete them",
-      "To decorate them"
-    ], answer: 1 },
+  let state = {
+    current: 0,
+    remainingSeconds: QUIZ.durationMinutes * 60,
+    answers: {},
+    flagged: {},
+    locked: false
+  };
 
-    { pts: 2, text: "Best order for solving a problem:", options: [
-      "Code → Think → Test",
-      "Test → Code → Think",
-      "Think → Plan → Code",
-      "Guess → Code → Hope"
-    ], answer: 2 }
-  ]
-};
-/* ====== END QUICK EDITS ====== */
+  let timerHandle = null;
 
-const $ = (id)=>document.getElementById(id);
+  function init(){
+    $("courseTitle").textContent = QUIZ.courseTitle;
+    $("quizTitle").textContent = QUIZ.quizTitle;
+    $("mainTitle").textContent = QUIZ.attemptTitle;
+    $("mainSub").textContent = QUIZ.instructions;
 
-function todayStr(){
-  const d = new Date();
-  return d.toLocaleDateString(undefined, { year:"numeric", month:"long", day:"numeric" });
-}
+    runSelfTests();
 
-function deepCopy(obj){ return JSON.parse(JSON.stringify(obj)); }
-
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    buildNav();
+    loadProgress();
+    renderQuestion();
+    bind();
+    startTimer();
+    updateTimerUI();
+    updateNavUI();
   }
-  return arr;
-}
 
-let state = {
-  startedAt: null,
-  remainingSeconds: QUIZ.durationMinutes * 60,
-  answers: {},        // { qIndex: selectedOptionIndex }
-  locked: false,
-  order: [],          // question order
-  optionOrder: {}     // { qIndex: [0..] } for option shuffling
-};
+  function runSelfTests(){
+    // Lightweight sanity checks (helps catch broken edits before learners see it)
+    const tests = [];
 
-const STORAGE_KEY = "class_quiz_v1";
+    tests.push({
+      name: "Quiz has 100 questions",
+      ok: () => Array.isArray(QUIZ.questions) && QUIZ.questions.length === 100
+    });
 
-function init(){
-  $("quizTitle").textContent = QUIZ.title;
-  $("quizNote").textContent = QUIZ.note;
-  $("durationText").textContent = `${QUIZ.durationMinutes} min`;
-  $("dateText").textContent = todayStr();
+    tests.push({
+      name: "All questions have 4 options",
+      ok: () => QUIZ.questions.every(q => Array.isArray(q.options) && q.options.length === 4)
+    });
 
-  // Build question order
-  const qCount = QUIZ.questions.length;
-  state.order = [...Array(qCount).keys()];
-  if(QUIZ.shuffleQuestions) shuffle(state.order);
+    tests.push({
+      name: "All answers are valid indexes",
+      ok: () => QUIZ.questions.every(q =>
+        Number.isInteger(q.answer) &&
+        Array.isArray(q.options) &&
+        q.answer >= 0 &&
+        q.answer < q.options.length
+      )
+    });
 
-  // Option order per question
-  state.optionOrder = {};
-  for(let qi=0; qi<qCount; qi++){
-    const opts = QUIZ.questions[qi].options.length;
-    const ord = [...Array(opts).keys()];
-    if(QUIZ.shuffleOptions) shuffle(ord);
-    state.optionOrder[qi] = ord;
+    tests.push({
+      name: "All questions are worth 1 mark",
+      ok: () => QUIZ.questions.every(q => q.pts === 1)
+    });
+
+    tests.push({
+      name: "Total marks equals 100",
+      ok: () => QUIZ.questions.reduce((sum,q)=>sum + (q.pts||0), 0) === 100
+    });
+
+    const failed = tests.filter(t => !t.ok());
+    if(failed.length){
+      console.error("Quiz self-tests failed:", failed.map(f=>f.name));
+      alert("Teacher note: Quiz setup error. Open console for details.");
+      throw new Error("Quiz self-tests failed: " + failed.map(f=>f.name).join(", "));
+    }
   }
 
-  renderQuestions();
-  bindEvents();
-  loadProgress(); // if exists
-  startTimer();
-  updateTimerUI();
-}
+  function buildNav(){
+    const host = $("navGrid");
+    host.innerHTML = "";
 
-function renderQuestions(){
-  const host = $("questions");
-  host.innerHTML = "";
+    QUIZ.questions.forEach((_, i)=>{
+      const btn = document.createElement("button");
+      btn.className = "qbtn todo";
+      btn.textContent = String(i+1);
+      btn.type = "button";
+      btn.addEventListener("click", ()=>{
+        if(state.locked) return;
+        state.current = i;
+        renderQuestion();
+        updateNavUI();
+      });
+      host.appendChild(btn);
+    });
+  }
 
-  state.order.forEach((qi, idx)=>{
-    const q = QUIZ.questions[qi];
+  function renderQuestion(){
+    const q = QUIZ.questions[state.current];
+    const selected = state.answers[state.current];
+    const isFlagged = !!state.flagged[state.current];
+    const ptsLabel = (q.pts === 1) ? "1 mark" : `${q.pts} marks`;
 
-    const qDiv = document.createElement("div");
-    qDiv.className = "q";
-    qDiv.dataset.qi = qi;
-
-    const head = document.createElement("div");
-    head.className = "qhead";
-    head.innerHTML = `
-      <div class="qnum">Q${idx+1}</div>
-      <div class="qtext">${escapeHTML(q.text)}</div>
-      <div class="qpts">${q.pts} mark${q.pts===1?"":"s"}</div>
+    const card = $("qcard");
+    card.innerHTML = `
+      <div class="qhead">
+        <div>
+          <div class="qnum">Question ${state.current+1} of ${QUIZ.questions.length}</div>
+          <div class="qtext">${escapeHTML(q.text)}</div>
+        </div>
+        <div class="qpts">${ptsLabel}</div>
+      </div>
+      <div class="qbody">
+        ${q.options.map((opt, idx)=>{
+          const id = `q_${state.current}_opt_${idx}`;
+          const checked = (selected === idx) ? "checked" : "";
+          return `
+            <label class="opt" for="${id}">
+              <input ${checked} ${state.locked?"disabled":""} type="radio" id="${id}" name="q_${state.current}" value="${idx}" />
+              <span>${escapeHTML(opt)}</span>
+            </label>
+          `;
+        }).join("")}
+      </div>
     `;
 
-    const body = document.createElement("div");
-    body.className = "qbody";
+    const fb = $("flagBtn");
+    fb.classList.toggle("flagged", isFlagged);
+    fb.textContent = isFlagged ? "⚑ Flagged" : "⚑ Flag question";
 
-    const opts = state.optionOrder[qi].map((optIndex)=>{
-      const optText = q.options[optIndex];
-      const name = `q_${qi}`;
-      const id = `q_${qi}_opt_${optIndex}`;
-      return `
-        <label class="opt" for="${id}">
-          <input type="radio" id="${id}" name="${name}" value="${optIndex}" />
-          <span>${escapeHTML(optText)}</span>
-        </label>
-      `;
-    }).join("");
-
-    body.innerHTML = opts;
-    qDiv.appendChild(head);
-    qDiv.appendChild(body);
-    host.appendChild(qDiv);
-  });
-
-  // Restore selected answers UI
-  Object.entries(state.answers).forEach(([qi, opt])=>{
-    const el = document.querySelector(`input[name="q_${qi}"][value="${opt}"]`);
-    if(el) el.checked = true;
-  });
-}
-
-function bindEvents(){
-  // answer change
-  document.addEventListener("change", (e)=>{
-    if(state.locked) return;
-    const t = e.target;
-    if(t && t.matches('input[type="radio"][name^="q_"]')){
-      const qi = t.name.split("_")[1];
-      state.answers[qi] = Number(t.value);
-    }
-  });
-
-  $("submitBtn").addEventListener("click", submitQuiz);
-  $("saveBtn").addEventListener("click", saveProgress);
-  $("resetBtn").addEventListener("click", resetAll);
-}
-
-function validateIdentity(){
-  if(!QUIZ.requireName && !QUIZ.requireClass) return true;
-  const name = $("learnerName").value.trim();
-  const cls  = $("className").value.trim();
-
-  if(QUIZ.requireName && !name){
-    alert("Please enter your name.");
-    $("learnerName").focus();
-    return false;
+    $("prevBtn").disabled = state.locked || state.current === 0;
+    $("nextBtn").disabled = state.locked || state.current === QUIZ.questions.length - 1;
   }
-  if(QUIZ.requireClass && !cls){
-    alert("Please enter your class (e.g., 7B).");
-    $("className").focus();
-    return false;
-  }
-  return true;
-}
 
-function scoreQuiz(){
-  let earned = 0;
-  let total = 0;
-  const breakdown = [];
-
-  QUIZ.questions.forEach((q, qi)=>{
-    total += q.pts;
-    const selected = state.answers[qi];
-    const correct = q.answer;
-    const ok = (selected === correct);
-    earned += ok ? q.pts : 0;
-    breakdown.push({ qi, ok, selected, correct, pts: q.pts, text: q.text });
-  });
-
-  return { earned, total, breakdown };
-}
-
-function submitQuiz(){
-  if(state.locked) return;
-  if(!validateIdentity()) return;
-
-  state.locked = true;
-  disableInputs(true);
-
-  const { earned, total, breakdown } = scoreQuiz();
-  const pct = Math.round((earned/total)*100);
-
-  const badgeClass = pct >= 50 ? "ok" : "bad";
-  const badgeText = pct >= 50 ? "PASS" : "NOT YET";
-
-  const name = $("learnerName").value.trim();
-  const cls  = $("className").value.trim();
-
-  let html = `
-    <div class="scoreline">
-      <div>
-        <div class="bigscore">${escapeHTML(name)} (${escapeHTML(cls)}): ${earned}/${total} • ${pct}%</div>
-        <div class="review">Submitted: ${todayStr()}</div>
-      </div>
-      <div class="badge ${badgeClass}">${badgeText}</div>
-    </div>
-  `;
-
-  if(QUIZ.showAnswersAfterSubmit){
-    html += `<div class="divider"></div>`;
-    html += `<div class="review"><strong>Review</strong> (green = correct, red = incorrect):</div>`;
-    html += `<ol class="small">`;
-    breakdown.forEach((b)=>{
-      const q = QUIZ.questions[b.qi];
-      const selectedText = (b.selected === undefined) ? "No answer" : q.options[b.selected];
-      const correctText  = q.options[b.correct];
-      html += `
-        <li style="margin:10px 0;">
-          <div><strong>${escapeHTML(q.text)}</strong> <span class="${b.ok?'correct':'wrong'}">(${b.ok?'Correct':'Incorrect'})</span></div>
-          <div>Your answer: ${escapeHTML(String(selectedText))}</div>
-          ${b.ok ? "" : `<div>Correct answer: <span class="correct">${escapeHTML(String(correctText))}</span></div>`}
-        </li>
-      `;
+  function bind(){
+    document.addEventListener("change", (e)=>{
+      if(state.locked) return;
+      const t = e.target;
+      if(t && t.matches('input[type="radio"][name^="q_"]')){
+        const qIndex = Number(t.name.split("_")[1]);
+        state.answers[qIndex] = Number(t.value);
+        updateNavUI();
+      }
     });
-    html += `</ol>`;
-  }else{
-    html += `<div class="review">Your teacher will review answers later.</div>`;
+
+    $("prevBtn").addEventListener("click", ()=>{
+      if(state.locked) return;
+      if(state.current > 0){
+        state.current -= 1;
+        renderQuestion();
+        updateNavUI();
+      }
+    });
+
+    $("nextBtn").addEventListener("click", ()=>{
+      if(state.locked) return;
+      if(state.current < QUIZ.questions.length - 1){
+        state.current += 1;
+        renderQuestion();
+        updateNavUI();
+      }
+    });
+
+    $("flagBtn").addEventListener("click", ()=>{
+      if(state.locked) return;
+      const i = state.current;
+      state.flagged[i] = !state.flagged[i];
+      renderQuestion();
+      updateNavUI();
+    });
+
+    $("submitBtn").addEventListener("click", submitAll);
+
+    $("finishAttemptBtn").addEventListener("click", ()=>{
+      if(state.locked) return;
+      const unanswered = countUnanswered();
+      const flagged = Object.values(state.flagged).filter(Boolean).length;
+      alert(`Finish attempt\n\nUnanswered: ${unanswered}\nFlagged: ${flagged}\n\nClick “Submit all and finish” to submit.`);
+    });
+
+    $("saveBtn").addEventListener("click", ()=>{
+      if(state.locked) return;
+      persist({ manualSave:true, at: new Date().toISOString() });
+      alert("Saved on this device.");
+    });
+
+    $("resetBtn").addEventListener("click", ()=>{
+      if(!confirm("Reset everything? This clears saved progress on this device.")) return;
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    });
   }
 
-  $("result").innerHTML = html;
-  $("result").style.display = "block";
+  function startTimer(){
+    if(timerHandle) return;
+    if(state.locked) return;
 
-  // Store final submission locally (optional)
-  persist({ submitted: true, score: { earned, total, pct }, at: new Date().toISOString() });
+    timerHandle = setInterval(()=>{
+      if(state.locked) return;
+      state.remainingSeconds -= 1;
+      if(state.remainingSeconds < 0) state.remainingSeconds = 0;
 
-  // Stop timer
-  stopTimer();
-}
-
-function disableInputs(disable){
-  document.querySelectorAll('input[type="radio"], input[type="text"]').forEach(el=>{
-    el.disabled = disable;
-  });
-  $("submitBtn").disabled = disable;
-}
-
-function saveProgress(){
-  if(state.locked) return;
-  persist({ submitted:false, at: new Date().toISOString() });
-  alert("Progress saved on this device.");
-}
-
-function loadProgress(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(!raw) return;
-
-  try{
-    const saved = JSON.parse(raw);
-
-    // Restore identity
-    if(saved.name) $("learnerName").value = saved.name;
-    if(saved.className) $("className").value = saved.className;
-
-    // Restore state
-    if(saved.state){
-      // keep QUIZ config, restore answers + remaining time
-      state.answers = saved.state.answers || {};
-      state.remainingSeconds = Number.isFinite(saved.state.remainingSeconds) ? saved.state.remainingSeconds : state.remainingSeconds;
-      // order and optionOrder are re-generated; answers remain valid
-      renderQuestions();
       updateTimerUI();
 
-      // Restore submitted state
-      if(saved.state.locked){
-        state.locked = true;
-        disableInputs(true);
+      if(state.remainingSeconds % QUIZ.autosaveSeconds === 0){
+        persist({ autosave:true, at: new Date().toISOString() });
       }
-    }
-  }catch(e){
-    // ignore bad storage
+
+      if(state.remainingSeconds === 0){
+        submitAll(true);
+      }
+    }, 1000);
   }
-}
 
-function persist(extra={}){
-  const payload = {
-    name: $("learnerName").value.trim(),
-    className: $("className").value.trim(),
-    state: {
-      remainingSeconds: state.remainingSeconds,
-      answers: state.answers,
-      locked: state.locked
-    },
-    extra
-  };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-}
+  function stopTimer(){
+    if(timerHandle){
+      clearInterval(timerHandle);
+      timerHandle = null;
+    }
+  }
 
-function resetAll(){
-  if(!confirm("Reset everything? This will clear answers on this device.")) return;
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
-}
+  function updateTimerUI(){
+    const m = String(Math.floor(state.remainingSeconds / 60)).padStart(2,"0");
+    const s = String(state.remainingSeconds % 60).padStart(2,"0");
+    $("timer").textContent = `${m}:${s}`;
 
-/* ===== Timer ===== */
-let timerHandle = null;
+    const pill = $("timerPill");
+    pill.classList.remove("warn","danger");
+    if(state.remainingSeconds <= 5*60) pill.classList.add("warn");
+    if(state.remainingSeconds <= 60) pill.classList.add("danger");
+  }
 
-function startTimer(){
-  if(timerHandle) return;
-  if(state.locked) return;
+  function updateNavUI(){
+    const buttons = Array.from($("navGrid").children);
+    buttons.forEach((btn, i)=>{
+      btn.classList.remove("todo","done","flag","current");
 
-  timerHandle = setInterval(()=>{
+      const answered = (state.answers[i] !== undefined);
+      const flagged = !!state.flagged[i];
+
+      if(answered) btn.classList.add("done");
+      else btn.classList.add("todo");
+      if(flagged) btn.classList.add("flag");
+      if(i === state.current) btn.classList.add("current");
+
+      btn.disabled = state.locked;
+    });
+
+    $("learnerName").disabled = state.locked;
+    $("className").disabled = state.locked;
+  }
+
+  function countUnanswered(){
+    let n = 0;
+    for(let i=0;i<QUIZ.questions.length;i++){
+      if(state.answers[i] === undefined) n += 1;
+    }
+    return n;
+  }
+
+  function validateIdentity(){
+    if(!QUIZ.requireName && !QUIZ.requireClass) return true;
+
+    const name = $("learnerName").value.trim();
+    const cls  = $("className").value.trim();
+
+    if(QUIZ.requireName && !name){
+      alert("Please enter your name.");
+      $("learnerName").focus();
+      return false;
+    }
+    if(QUIZ.requireClass && !cls){
+      alert("Please enter your class (e.g., 7B).");
+      $("className").focus();
+      return false;
+    }
+    return true;
+  }
+
+  function scoreQuiz(){
+    let earned = 0;
+    let total = 0;
+    const breakdown = [];
+
+    QUIZ.questions.forEach((q, i)=>{
+      total += q.pts;
+      const selected = state.answers[i];
+      const ok = (selected === q.answer);
+      earned += ok ? q.pts : 0;
+      breakdown.push({ i, ok, selected, correct: q.answer, pts: q.pts, text: q.text });
+    });
+
+    return { earned, total, breakdown };
+  }
+
+  function submitAll(auto=false){
     if(state.locked) return;
-    state.remainingSeconds -= 1;
-    if(state.remainingSeconds < 0) state.remainingSeconds = 0;
+    if(!validateIdentity()) return;
 
-    updateTimerUI();
-
-    // Autosave every 15 seconds
-    if(state.remainingSeconds % 15 === 0){
-      persist({ autosave:true, at: new Date().toISOString() });
+    const unanswered = countUnanswered();
+    if(!auto && unanswered > 0){
+      const go = confirm(`You have ${unanswered} unanswered question(s).\n\nSubmit anyway?`);
+      if(!go) return;
     }
 
-    // Auto-submit at 0
-    if(state.remainingSeconds === 0){
-      submitQuiz();
-    }
-  }, 1000);
-}
+    state.locked = true;
+    stopTimer();
+    updateNavUI();
+    renderQuestion();
 
-function stopTimer(){
-  if(timerHandle){
-    clearInterval(timerHandle);
-    timerHandle = null;
+    const { earned, total, breakdown } = scoreQuiz();
+    const pct = Math.round((earned/total)*100);
+
+    const badgeClass = pct >= 50 ? "ok" : "bad";
+    const badgeText = pct >= 50 ? "PASS" : "NOT YET";
+
+    const name = $("learnerName").value.trim();
+    const cls  = $("className").value.trim();
+
+    let html = `
+      <div class="score">
+        <div>
+          <div class="big">${escapeHTML(name)} (${escapeHTML(cls)}) — ${earned}/${total} • ${pct}%</div>
+          <div class="small">${auto ? "Auto-submitted when time ended." : "Submitted."}</div>
+        </div>
+        <div class="badge ${badgeClass}">${badgeText}</div>
+      </div>
+    `;
+
+    if(QUIZ.showReviewAfterSubmit){
+      html += `
+        <details class="review" open>
+          <summary>Review answers</summary>
+          <ol class="review-list">
+            ${breakdown.map((b)=>{
+              const q = QUIZ.questions[b.i];
+              const your = (b.selected === undefined) ? "No answer" : q.options[b.selected];
+              const cor  = q.options[b.correct];
+              return `
+                <li>
+                  <div><strong>${escapeHTML(q.text)}</strong> <span class="${b.ok?"correct":"wrong"}">(${b.ok?"Correct":"Incorrect"})</span></div>
+                  <div>Your answer: ${escapeHTML(String(your))}</div>
+                  ${b.ok ? "" : `<div>Correct answer: <span class=\"correct\">${escapeHTML(String(cor))}</span></div>`}
+                </li>
+              `;
+            }).join("")}
+          </ol>
+        </details>
+      `;
+    }
+
+    $("result").innerHTML = html;
+    $("result").style.display = "block";
+
+    persist({ submitted:true, score:{ earned, total, pct }, at: new Date().toISOString(), auto });
+    $("result").scrollIntoView({ behavior:"smooth", block:"start" });
   }
-}
 
-function updateTimerUI(){
-  const m = String(Math.floor(state.remainingSeconds / 60)).padStart(2,"0");
-  const s = String(state.remainingSeconds % 60).padStart(2,"0");
-  $("timer").textContent = `${m}:${s}`;
-}
+  function persist(extra={}){
+    const payload = {
+      identity: {
+        name: $("learnerName").value.trim(),
+        className: $("className").value.trim()
+      },
+      state: {
+        current: state.current,
+        remainingSeconds: state.remainingSeconds,
+        answers: state.answers,
+        flagged: state.flagged,
+        locked: state.locked
+      },
+      extra
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }
 
-/* ===== Utils ===== */
-function escapeHTML(str){
-  return String(str).replace(/[&<>"']/g, (m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
-}
+  function loadProgress(){
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    try{
+      const saved = JSON.parse(raw);
+      if(saved.identity){
+        if(saved.identity.name) $("learnerName").value = saved.identity.name;
+        if(saved.identity.className) $("className").value = saved.identity.className;
+      }
+      if(saved.state){
+        state.current = Number.isFinite(saved.state.current) ? saved.state.current : 0;
+        state.remainingSeconds = Number.isFinite(saved.state.remainingSeconds) ? saved.state.remainingSeconds : state.remainingSeconds;
+        state.answers = saved.state.answers || {};
+        state.flagged = saved.state.flagged || {};
+        state.locked = !!saved.state.locked;
+      }
+      if(state.locked){
+        stopTimer();
+      }
+    }catch(e){ /* ignore */ }
+  }
 
-/* ===== Init ===== */
-init();
+  function escapeHTML(str){
+    return String(str).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[m]));
+  }
+
+  // Persist identity while typing
+  $("learnerName").addEventListener("input", ()=>{ if(!state.locked) persist({ typing:true }); });
+  $("className").addEventListener("input", ()=>{ if(!state.locked) persist({ typing:true }); });
+
+  // Warn on accidental refresh if they started
+  window.addEventListener("beforeunload", (e)=>{
+    if(state.locked) return;
+    const hasWork = Object.keys(state.answers).length > 0;
+    if(hasWork){
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  init();
 </script>
 </body>
 </html>
