@@ -5,34 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Disa Moodle Style Quiz • 100 Questions</title>
 
+  <!-- Supabase JS (v2) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    :root{--bg:#f5f6f8;--surface:#fff;--text:#1f2937;--muted:#6b7280;--border:#dfe3ea;--brand:#b11226;--brand-2:#8f0e1e;--ok:#1b7f3b;--bad:#b42318;--warn:#b45309;--shadow:0 10px 28px rgba(17,24,39,.10);--radius:14px;--mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    :root{
+      --bg:#f5f6f8;--surface:#fff;--text:#1f2937;--muted:#6b7280;--border:#dfe3ea;
+      --brand:#b11226;--brand-2:#8f0e1e;--ok:#1b7f3b;--bad:#b42318;--warn:#b45309;
+      --shadow:0 10px 28px rgba(17,24,39,.10);--radius:14px;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace
+    }
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;background:var(--bg);color:var(--text);line-height:1.4}
-    .topbar{background:linear-gradient(180deg,var(--brand) 0%,var(--brand-2) 100%);color:#fff;padding:16px 18px;position:sticky;top:0;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .topbar{
+      background:linear-gradient(180deg,var(--brand) 0%,var(--brand-2) 100%);
+      color:#fff;padding:16px 18px;position:sticky;top:0;z-index:20;
+      box-shadow:0 6px 18px rgba(0,0,0,.18)
+    }
     .topbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .logo{height:140px;width:auto;display:block;object-fit:contain}
-    .logo img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25))}
-    .brand h1{font-size:22px;margin:0;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.2px}
-    .brand .sub{font-size:13px;color:rgba(255,255,255,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .logoWrap{width:150px;height:150px;display:grid;place-items:center}
+    .logoWrap img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25))}
+    .brand h1{font-size:28px;margin:0;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.2px}
+    .brand .sub{font-size:14px;color:rgba(255,255,255,.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .timer-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-    .timer-pill{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.30);background:rgba(255,255,255,.14);border-radius:999px;font-weight:950;white-space:nowrap;backdrop-filter:blur(6px)}
+    .timer-pill{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(255,255,255,.30);
+      background:rgba(255,255,255,.14);border-radius:999px;font-weight:950;white-space:nowrap;backdrop-filter:blur(6px)
+    }
     .timer-pill .label{font-weight:850;color:rgba(255,255,255,.90);font-size:12px}
-    .timer-pill .time{font-family:var(--mono);font-size:15px;color:#fff}
+    .timer-pill .time{font-family:var(--mono);font-size:16px;color:#fff}
     .timer-pill.warn{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.38)}
     .timer-pill.danger{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.50)}
     .credits{font-size:11px;color:rgba(255,255,255,.86)}
     .wrap{max-width:1100px;margin:18px auto 64px;padding:0 14px;display:grid;grid-template-columns:320px 1fr;gap:14px}
     @media (max-width:980px){.wrap{grid-template-columns:1fr}}
-    .side{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;position:sticky;top:86px;align-self:start}
+    .side{
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+      box-shadow:var(--shadow);overflow:hidden;position:sticky;top:96px;align-self:start
+    }
     @media (max-width:980px){.side{position:static}}
     .side-head{padding:14px 14px 10px;border-bottom:1px solid var(--border);background:#fbfcfe}
     .side-title{margin:0;font-size:14px;font-weight:1000}
     .side-sub{margin:6px 0 0;font-size:12px;color:var(--muted)}
     .ident{padding:12px 14px;border-bottom:1px solid var(--border);display:grid;gap:10px}
     .field label{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
-    .field input,.field select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);outline:none;background:#fff;font-size:14px}
+    .field input,.field select{
+      width:100%;padding:10px;border-radius:12px;border:1px solid var(--border);outline:none;background:#fff;font-size:14px
+    }
     .field input:focus,.field select:focus{border-color:rgba(15,108,191,.45);box-shadow:0 0 0 4px rgba(15,108,191,.12)}
     .nav{padding:12px 14px 14px}
     .legend{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
@@ -47,9 +67,19 @@
     .side-actions{padding:12px 14px 14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;background:#fbfcfe}
     .main{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
     .main-head{padding:16px 18px;border-bottom:1px solid var(--border);background:#fbfcfe}
-    .main-title{margin:0;font-size:18px;font-weight:1000}
+    .main-title{margin:0;font-size:22px;font-weight:1000}
     .main-sub{margin:6px 0 0;font-size:13px;color:var(--muted)}
-    .panel{padding:14px 18px 18px}
+    .panel{padding:14px 18px 18px;position:relative}
+    /* watermark */
+    .panel::before{
+      content:"";position:absolute;inset:0;pointer-events:none;opacity:.06;
+      background-image:url("disa-logo.png");
+      background-repeat:no-repeat;
+      background-position:center 120px;
+      background-size:420px auto;
+      filter:grayscale(1);
+    }
+    .panel > *{position:relative;z-index:1}
     .qcard{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#fff}
     .qhead{padding:14px 14px 10px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:#fafcff;border-bottom:1px solid var(--border)}
     .qnum{font-weight:1000;color:#0b2d4c}
@@ -62,9 +92,12 @@
     .opt span{flex:1}
     .tools{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
     button{border:0;border-radius:12px;padding:10px 12px;font-weight:1000;cursor:pointer;font-size:14px}
-    .primary{background:var(--brand);color:#fff}.primary:hover{filter:brightness(.96)}
-    .ghost{background:#fff;border:1px solid var(--border);color:var(--text)}.ghost:hover{background:#fafafa}
-    .danger{background:#fff;border:1px solid rgba(180,35,24,.25);color:var(--bad)}.danger:hover{background:#fff5f5}
+    .primary{background:var(--brand);color:#fff}
+    .primary:hover{filter:brightness(.96)}
+    .ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+    .ghost:hover{background:#fafafa}
+    .danger{background:#fff;border:1px solid rgba(180,35,24,.25);color:var(--bad)}
+    .danger:hover{background:#fff5f5}
     .small{font-size:12px;color:var(--muted)}
     .flagbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:#fff;padding:10px 12px;border-radius:12px;font-weight:1000;cursor:pointer}
     .flagbtn.flagged{border-color:rgba(180,83,9,.35);background:rgba(180,83,9,.08);color:var(--warn)}
@@ -80,54 +113,70 @@
     .review-list li{margin:10px 0}
     .correct{color:var(--ok);font-weight:1000}
     .wrong{color:var(--bad);font-weight:1000}
+    .hintBox{
+      border:1px dashed rgba(177,18,38,.35);
+      background:rgba(177,18,38,.05);
+      color:#0b2d4c;
+      border-radius:14px;
+      padding:12px 14px;
+      margin-top:12px;
+      font-weight:900;
+    }
+
     @media print{.topbar,.side,.tools,.flagbtn,#toastLayer,.fxOverlay{display:none!important}body{background:#fff}.wrap{grid-template-columns:1fr}.main{box-shadow:none}}
-    /* ----- Toast + FX ----- */
+
+    /* Toast + FX */
     #toastLayer{position:fixed;inset:0;pointer-events:none;z-index:9999}
     #toastBox{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:min(560px,calc(100% - 28px));pointer-events:none}
-    .toast{pointer-events:auto;background:rgba(255,255,255,.96);border:1px solid rgba(223,227,234,.95);box-shadow:0 18px 46px rgba(17,24,39,.18);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;backdrop-filter:blur(8px)}
+    .toast{pointer-events:auto;background:rgba(255,255,255,.96);border:1px solid rgba(223,227,234,.95);
+      box-shadow:0 18px 46px rgba(17,24,39,.18);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;backdrop-filter:blur(8px)}
     .toast .tTitle{font-weight:1000;font-size:15px;margin:0;color:#0b2d4c}
     .toast .tMeta{margin:4px 0 0;font-size:13px;color:var(--muted)}
     .toast .tScore{font-family:var(--mono);font-weight:1000;font-size:14px;color:#0b2d4c;margin-top:8px}
     .toast .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;font-weight:1000;font-size:12px;border:1px solid var(--border);background:#fff}
     .toast .pill.ok{color:var(--ok);border-color:rgba(27,127,59,.25);background:rgba(27,127,59,.06)}
     .toast .pill.bad{color:var(--bad);border-color:rgba(180,35,24,.25);background:rgba(180,35,24,.06)}
-    .toast .emoji{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(177,18,38,.12),rgba(143,14,30,.06));border:1px solid rgba(177,18,38,.18);font-size:20px}
+    .toast .emoji{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(180deg,rgba(177,18,38,.12),rgba(143,14,30,.06));
+      border:1px solid rgba(177,18,38,.18);font-size:20px}
     .toast-enter{animation:toastIn .25s ease-out both}
     @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
     .toast-blur-exit{animation:toastBlurOut .35s ease-in both}
     @keyframes toastBlurOut{0%{opacity:1;filter:blur(0);transform:translateY(0)}100%{opacity:0;filter:blur(8px);transform:translateY(-12px)}}
     .confettiLayer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9998}
-    .confettiPiece{position:absolute;top:-14px;width:10px;height:16px;border-radius:3px;opacity:.95;transform:translateY(0) rotate(0deg);animation:confettiFall var(--dur) linear var(--delay) both}
+    .confettiPiece{position:absolute;top:-14px;width:10px;height:16px;border-radius:3px;opacity:.95;transform:translateY(0) rotate(0deg);
+      animation:confettiFall var(--dur) linear var(--delay) both}
     @keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg)}100%{transform:translateY(110vh) rotate(720deg)}}
-    .fxOverlay{position:fixed;inset:0;display:none;pointer-events:none;z-index:10000;background:radial-gradient(1200px 800px at 50% 20%,rgba(255,255,255,.12),rgba(0,0,0,.62))}
+    .fxOverlay{position:fixed;inset:0;display:none;pointer-events:none;z-index:10000;
+      background:radial-gradient(1200px 800px at 50% 20%,rgba(255,255,255,.12),rgba(0,0,0,.62))}
     .fxOverlay.show{display:block;animation:fxIn .25s ease-out both}
     @keyframes fxIn{from{opacity:0}to{opacity:1}}
     #fxCanvas{position:absolute;inset:0;width:100%;height:100%}
     .congrats{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);text-align:center;font-weight:1000;letter-spacing:.5px;line-height:1}
-    .congrats .big{font-size:min(88px,12vw);background:linear-gradient(180deg,#ffeaa0 0%,#ffd24a 50%,#c99200 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 16px 44px rgba(0,0,0,.35)}
+    .congrats .big{font-size:min(88px,12vw);background:linear-gradient(180deg,#ffeaa0 0%,#ffd24a 50%,#c99200 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 16px 44px rgba(0,0,0,.35)}
     .congrats.rise{animation:rise 10s ease-out both}
     @keyframes rise{0%{opacity:0;transform:translate(-50%,-40%)}15%{opacity:1}100%{opacity:1;transform:translate(-50%,-64%)}}
   </style>
-
-  <!-- Supabase JS client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <div class="logo">
-        <img src="disa-logo.png" alt="Disa Primary School Logo"/>
+      <div class="logoWrap" aria-label="Disa logo">
+        <img src="disa-logo.png" alt="Disa Primary School Logo">
       </div>
       <div style="min-width:0">
         <h1 id="courseTitle">Course: Coding &amp; Robotics</h1>
         <div class="sub" id="quizTitle">Quiz: (100 Questions)</div>
       </div>
     </div>
+
     <div class="timer-wrap">
       <div class="timer-pill" id="timerPill" title="Timer counts down. Auto-submits at 0.">
-        <span class="label">Time left</span><span class="time" id="timer">35:00</span>
+        <span class="label">Time left</span>
+        <span class="time" id="timer">35:00</span>
       </div>
       <div class="credits">© MR SAMUELS</div>
     </div>
@@ -138,7 +187,7 @@
   <aside class="side" aria-label="Quiz navigation">
     <div class="side-head">
       <p class="side-title">Quiz navigation</p>
-      <p class="side-sub">Total: <strong id="totalQ">100</strong> questions • Auto-submit at 0</p>
+      <p class="side-sub">Total: <strong>100</strong> questions • Auto-submit at 0</p>
     </div>
 
     <div class="ident">
@@ -156,11 +205,20 @@
         </select>
       </div>
 
-      <div class="small" id="gradeLine">Grade: —</div>
+      <div class="field">
+        <label>Grade</label>
+        <div style="font-weight:1000;color:#0b2d4c" id="gradeLabel">—</div>
+      </div>
 
-      <!-- Hidden mirrors so your result text stays the same style -->
-      <input id="learnerName" type="hidden"/>
-      <input id="className" type="hidden"/>
+      <div class="field">
+        <label for="learnerName">Learner name</label>
+        <input id="learnerName" autocomplete="name" placeholder="Auto-filled from dropdown" disabled/>
+      </div>
+
+      <div class="field">
+        <label for="className">Class</label>
+        <input id="className" autocomplete="off" placeholder="Auto-filled from dropdown" disabled/>
+      </div>
     </div>
 
     <div class="nav">
@@ -193,7 +251,6 @@
           <button class="ghost" id="nextBtn" title="Go to the next question.">Next</button>
           <button class="flagbtn" id="flagBtn" title="Flag this question to review later.">⚑ Flag question</button>
         </div>
-
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="ghost" id="finishAttemptBtn" title="Shows unanswered/flagged summary (does not submit).">Finish attempt</button>
           <button class="primary" id="submitBtn" title="Submit your answers and finish the quiz.">Submit all and finish</button>
@@ -216,218 +273,115 @@
 (function(){
   "use strict";
 
-  // =========================
-  // CONFIG (edit these 2 lines)
-  // =========================
-  const SUPABASE_URL = "PASTE_YOUR_SUPABASE_URL";
-  const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_KEY";
+  // ✅ Your Supabase details (as provided)
+  const SUPABASE_URL = "https://tcofqcoeqptjdjawgohb.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_3ud-FlpJ9AZZDIzVkZ1EoA_B7c-Vs7B";
 
+  const $ = (id)=>document.getElementById(id);
+  const KEY = "disa_quiz_100q_v3_supabase";
+
+  // ---------- Quiz config ----------
   const QZ = {
-    courseTitle: "Course: Coding & Robotics",
-    quizTitle: "Quiz: (100 Questions)",
-    attemptTitle: "Attempt: Coding & Robotics MCQ (100 Questions)",
-    instructions: "Rules: Silent work. No talking. Auto-submit when time runs out.",
-    durationMinutes: 35,
-    autosaveSeconds: 15,
-    showReviewAfterSubmit: true,
+    courseTitle:"Course: Coding & Robotics",
+    quizTitle:"Quiz: (100 Questions)",
+    attemptTitle:"Attempt: Coding & Robotics MCQ (100 Questions)",
+    instructions:"Rules: Silent work. No talking. Auto-submit when time runs out.",
+    durationMinutes:35,
+    autosaveSeconds:15,
+    showReviewAfterSubmit:true,
+    questions: build100Questions()
   };
 
-  const $ = (id) => document.getElementById(id);
-  const KEY = "disa_quiz_100q_dynamic_v1";
-  const esc = (s) => String(s).replace(/[&<>\"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+  // ---------- State ----------
+  let S = {
+    c:0,
+    r:QZ.durationMinutes*60,
+    A:{},     // answers
+    F:{},     // flagged
+    L:false,  // locked/submitted
+    started:false, // timer started after selection
+    seed:null,
+    class_name:"",
+    learner_id:"",
+    learner_full_name:"",
+    grade:null
+  };
 
-  // Supabase client
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // =========================
-  // 100 QUESTIONS (generated, short)
-  // =========================
-  // Each item: [question, [A,B,C,D], correctIndex]
-  const BANK = [
-    ["What is an algorithm?", ["A computer","A step-by-step set of instructions","A robot","A mistake"], 1],
-    ["A loop is used to…", ["Repeat instructions","Delete files","Turn off a computer","Open a website"], 0],
-    ["Debugging means…", ["Finding and fixing mistakes","Making the screen brighter","Charging a laptop","Printing a page"], 0],
-    ["Which is a block-coding tool for learners?", ["Scratch","PowerPoint","Calculator","Camera"], 0],
-    ["An IF statement is used to…", ["Make a choice/decision","Print a document","Charge a device","Open the Start menu"], 0],
-    ["What does CPU stand for?", ["Central Processing Unit","Computer Power Unit","Control Program User","Central Print Unit"], 0],
-    ["typing.com helps you practise…", ["Typing","Drawing","Singing","Cooking"], 0],
-    ["Which key makes a space?", ["Spacebar","Tab","Caps Lock","Esc"], 0],
-    ["Which key deletes to the LEFT?", ["Backspace","Delete","Enter","Windows"], 0],
-    ["Typing speed is usually measured in…", ["WPM","KM","Volts","Pixels"], 0],
-    ["Which shortcut saves in many apps?", ["Ctrl + S","Ctrl + P","Ctrl + C","Ctrl + V"], 0],
-    ["Windows is a(n)…", ["Operating system","Browser","Game","Keyboard"], 0],
-    ["A browser is used to…", ["Visit websites","Charge devices","Write with a pen","Build robots"], 0],
-    ["Which is a browser?", ["Google Chrome","Windows","Keyboard","Touchpad"], 0],
-    ["A password should be…", ["Kept private","Shared with friends","Written on the desk","Very short"], 0],
-    ["The touchpad controls the…", ["Pointer/cursor","Speaker","Battery","Keyboard lights"], 0],
-    ["A folder is used to…", ["Organise files","Play music","Charge the laptop","Change passwords"], 0],
-    ["Wi-Fi is used to…", ["Connect to the internet","Charge the battery","Make the screen bigger","Type faster"], 0],
-    ["Sphero is a…", ["Programmable robot ball","Printer","Keyboard","Monitor"], 0],
-    ["Bluetooth is used for…", ["Short-range wireless connection","Printing","Charging","Typing"], 0],
-    ["A sensor helps a robot…", ["Detect things","Eat","Sleep","Write"], 0],
-    ["Robots follow…", ["Instructions","Feelings","Luck","Noise"], 0],
-    ["In a flowchart, a diamond usually means…", ["Decision","Start","End","Data"], 0],
-    ["A variable is like a…", ["Box that stores information","Type of printer","Mouse pointer","Battery"], 0],
-    ["Which is hardware?", ["Keyboard","Windows","Website","Typing.com"], 0],
-  ];
-
-  // Turn ~25 base items into 100 by cycling and adding small “context tags”
-  function build100Questions() {
-    const tags = [
-      "Coding", "Robotics", "Digital Skills", "Computer Lab", "Sphero", "Typing", "Windows",
-      "Internet Safety", "Problem Solving", "Algorithms"
-    ];
-    const out = [];
-    for (let i = 0; i < 100; i++) {
-      const base = BANK[i % BANK.length];
-      const tag = tags[i % tags.length];
-      // Keep it readable, but distinct
-      const t = `[${tag}] ${base[0]}`;
-      out.push({ t, o: [...base[1]], a: base[2] });
-    }
-    return out;
-  }
-
-  // =========================
-  // Seeded shuffle (stops “all A”)
-  // =========================
-  function hashStr(str){ let h=2166136261>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
-  function mulberry32(a){ return function(){ let t=a+=0x6D2B79F5; t=Math.imul(t^t>>>15,t|1); t^=t+Math.imul(t^t>>>7,t|61); return ((t^t>>>14)>>>0)/4294967296; }; }
-  function shuffleInPlace(arr,rng){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(rng()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } }
-
-  // =========================
-  // STATE
-  // =========================
-  let QUESTIONS = build100Questions();
-  $("totalQ").textContent = String(QUESTIONS.length);
-
-  let S = { c:0, r: QZ.durationMinutes*60, A:{}, F:{}, L:false, seed:null };
   let T = null;
+  let supabase = null;
+  let optionsShuffled = false;
 
-  // =========================
-  // SUPABASE DROPDOWNS
-  // =========================
-  async function loadClasses(){
-    const classSelect = $("classSelect");
-    classSelect.innerHTML = `<option value="">Select class...</option>`;
+  // ---------- Helpers ----------
+  const esc = (s)=>String(s).replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+  const rnd=(a,b)=>a+Math.random()*(b-a);
 
-    // Pull and dedupe
-    const { data, error } = await supabase
-      .from("learners")
-      .select("class_name, grade")
-      .order("grade", { ascending: true })
-      .order("class_name", { ascending: true });
-
-    if (error) { console.error(error); return; }
-
-    const seen = new Set();
-    for (const row of (data || [])) {
-      if (!row.class_name) continue;
-      const key = `${row.grade}|${row.class_name}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const opt = document.createElement("option");
-      opt.value = row.class_name;
-      opt.textContent = row.class_name;
-      opt.dataset.grade = row.grade ?? "";
-      classSelect.appendChild(opt);
+  function hardCheck100(){
+    if(!Array.isArray(QZ.questions) || QZ.questions.length !== 100){
+      throw new Error("Questions must be exactly 100. Current: "+(QZ.questions?.length ?? "null"));
     }
-  }
-
-  async function loadLearnersForClass(className){
-    const learnerSelect = $("learnerSelect");
-    learnerSelect.disabled = true;
-    learnerSelect.innerHTML = `<option value="">Loading...</option>`;
-    $("gradeLine").textContent = `Grade: —`;
-
-    const { data, error } = await supabase
-      .from("learners")
-      .select("id, full_name, first_name, surname, grade, class_name")
-      .eq("class_name", className)
-      .order("surname", { ascending:true })
-      .order("first_name", { ascending:true });
-
-    if (error) {
-      console.error(error);
-      learnerSelect.innerHTML = `<option value="">Failed to load learners</option>`;
-      return;
-    }
-
-    learnerSelect.innerHTML = `<option value="">Select learner...</option>`;
-    for (const L of (data || [])) {
-      const opt = document.createElement("option");
-      opt.value = L.id;
-      opt.textContent = L.full_name || `${L.first_name||""} ${L.surname||""}`.trim();
-      opt.dataset.grade = L.grade ?? "";
-      opt.dataset.className = L.class_name ?? "";
-      opt.dataset.fullName = opt.textContent;
-      learnerSelect.appendChild(opt);
-    }
-    learnerSelect.disabled = false;
-
-    if (data && data[0]) $("gradeLine").textContent = `Grade: ${data[0].grade ?? "—"}`;
-  }
-
-  function hookDropdowns(){
-    $("classSelect").addEventListener("change", async () => {
-      const cls = $("classSelect").value;
-      $("className").value = cls;
-      $("learnerName").value = "";
-      $("learnerSelect").value = "";
-      if (!cls) {
-        $("learnerSelect").disabled = true;
-        $("learnerSelect").innerHTML = `<option value="">Select learner...</option>`;
-        $("gradeLine").textContent = `Grade: —`;
-        save();
-        return;
+    for(const q of QZ.questions){
+      if(!q || typeof q.t!=="string" || !Array.isArray(q.o) || q.o.length!==4 || !Number.isInteger(q.a) || q.a<0 || q.a>3){
+        throw new Error("Invalid question format detected.");
       }
-      await loadLearnersForClass(cls);
-      save();
-    });
-
-    $("learnerSelect").addEventListener("change", () => {
-      const opt = $("learnerSelect").selectedOptions[0];
-      if (!opt) return;
-      $("learnerName").value = opt.dataset.fullName || "";
-      $("className").value = opt.dataset.className || $("classSelect").value || "";
-      $("gradeLine").textContent = `Grade: ${opt.dataset.grade || "—"}`;
-      save();
-    });
+    }
   }
 
-  // =========================
-  // QUIZ CORE
-  // =========================
+  function hashStr(str){
+    let h=2166136261>>>0;
+    for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); }
+    return h>>>0;
+  }
+  function mulberry32(a){
+    return function(){
+      let t=a+=0x6D2B79F5;
+      t=Math.imul(t^t>>>15,t|1);
+      t^=t+Math.imul(t^t>>>7,t|61);
+      return((t^t>>>14)>>>0)/4294967296;
+    };
+  }
+  function shuffleInPlace(arr,rng){
+    for(let i=arr.length-1;i>0;i--){
+      const j=Math.floor(rng()*(i+1));
+      [arr[i],arr[j]]=[arr[j],arr[i]];
+    }
+  }
+
   function ensureSeed(){
-    if (S.seed != null) return;
-    const n = ($("learnerName").value || "").trim();
-    const c = ($("className").value || "").trim();
-    const base = (n && c) ? (n + "|" + c) : "anon";
+    if(S.seed!=null) return;
+    const base = (S.learner_id || S.learner_full_name || "anon") + "|" + (S.class_name || "noclass");
     S.seed = hashStr(base + "|" + KEY);
   }
 
+  // Shuffle options ONCE after learner selection, deterministic per learner+class
   function shuffleOptionsDeterministic(){
+    if(optionsShuffled) return;
     ensureSeed();
     const rng = mulberry32(S.seed);
-    for (const q of QUESTIONS) {
-      const tagged = q.o.map((text, idx) => ({text, idx}));
-      shuffleInPlace(tagged, rng);
-      q.o = tagged.map(x => x.text);
-      q.a = tagged.findIndex(x => x.idx === q.a);
+    for(const q of QZ.questions){
+      const tagged = q.o.map((text,idx)=>({text,idx}));
+      shuffleInPlace(tagged,rng);
+      q.o = tagged.map(x=>x.text);
+      q.a = tagged.findIndex(x=>x.idx===q.a);
     }
+    optionsShuffled = true;
   }
 
+  function canAnswer(){
+    return !!S.class_name && !!S.learner_full_name && !S.L;
+  }
+
+  // ---------- UI render ----------
   function nav(){
-    const h = $("navGrid");
-    h.innerHTML = "";
-    for (let i=0;i<QUESTIONS.length;i++){
-      const b = document.createElement("button");
-      b.className = "qbtn todo";
-      b.textContent = i+1;
-      b.type = "button";
-      b.addEventListener("click", () => {
-        if (S.L) return;
-        S.c = i;
+    const h=$("navGrid");
+    h.innerHTML="";
+    for(let i=0;i<QZ.questions.length;i++){
+      const b=document.createElement("button");
+      b.className="qbtn todo";
+      b.textContent=i+1;
+      b.type="button";
+      b.addEventListener("click",()=>{
+        if(S.L) return;
+        S.c=i;
         render();
         navUI();
       });
@@ -436,170 +390,197 @@
   }
 
   function render(){
-    const q = QUESTIONS[S.c];
-    const sel = S.A[S.c];
-    const fl = !!S.F[S.c];
+    const q=QZ.questions[S.c];
+    const sel=S.A[S.c];
+    const fl=!!S.F[S.c];
+
+    // If not selected yet, show a clean message (but still show the question box)
+    const lockedBySetup = !canAnswer();
 
     $("qcard").innerHTML = `
       <div class="qhead">
         <div>
-          <div class="qnum">Question ${S.c+1} of ${QUESTIONS.length}</div>
+          <div class="qnum">Question ${S.c+1} of ${QZ.questions.length}</div>
           <div class="qtext">${esc(q.t)}</div>
         </div>
         <div class="qpts">1 mark</div>
       </div>
       <div class="qbody">
-        ${q.o.map((o, idx) => {
-          const id = `q_${S.c}_opt_${idx}`;
+        ${q.o.map((o,idx)=>{
+          const id=`q_${S.c}_opt_${idx}`;
           return `
             <label class="opt" for="${id}">
-              <input ${(sel===idx)?"checked":""} ${S.L?"disabled":""}
+              <input ${sel===idx ? "checked":""}
+                     ${lockedBySetup ? "disabled":""}
                      type="radio" id="${id}" name="q_${S.c}" value="${idx}"/>
               <span>${esc(o)}</span>
             </label>
           `;
         }).join("")}
+
+        ${lockedBySetup ? `
+          <div class="hintBox">
+            Select <span style="color:var(--brand);font-weight:1000">Class</span> and <span style="color:var(--brand);font-weight:1000">Learner</span> on the left to start the attempt.
+          </div>
+        ` : ``}
       </div>
     `;
 
-    const fb = $("flagBtn");
-    fb.classList.toggle("flagged", fl);
-    fb.textContent = fl ? "⚑ Flagged" : "⚑ Flag question";
+    const fb=$("flagBtn");
+    fb.classList.toggle("flagged",fl);
+    fb.textContent=fl ? "⚑ Flagged" : "⚑ Flag question";
 
     $("prevBtn").disabled = S.L || S.c===0;
-    $("nextBtn").disabled = S.L || S.c===QUESTIONS.length-1;
+    $("nextBtn").disabled = S.L || S.c===QZ.questions.length-1;
   }
 
   function navUI(){
-    const bs = Array.from($("navGrid").children);
-    for (let i=0;i<bs.length;i++){
-      const b = bs[i];
+    const bs=Array.from($("navGrid").children);
+    for(let i=0;i<bs.length;i++){
+      const b=bs[i];
       b.classList.remove("todo","done","flag","current");
-      (S.A[i]!==undefined ? b.classList.add("done") : b.classList.add("todo"));
-      if (S.F[i]) b.classList.add("flag");
-      if (i===S.c) b.classList.add("current");
+      (S.A[i]!==void 0 ? b.classList.add("done") : b.classList.add("todo"));
+      if(S.F[i]) b.classList.add("flag");
+      if(i===S.c) b.classList.add("current");
       b.disabled = S.L;
     }
-    $("classSelect").disabled = S.L;
-    $("learnerSelect").disabled = S.L;
 
-    $("submitBtn").textContent = S.L ? "Submitted" : "Submit all and finish";
+    const sb=$("submitBtn");
+    sb.textContent = S.L ? "Submitted" : "Submit all and finish";
   }
 
   function unansweredCount(){
     let n=0;
-    for (let i=0;i<QUESTIONS.length;i++) if (S.A[i]===undefined) n++;
+    for(let i=0;i<QZ.questions.length;i++) if(S.A[i]===void 0) n++;
     return n;
   }
 
-  function idOK(){
-    const name = ($("learnerName").value || "").trim();
-    const cls  = ($("className").value || "").trim();
-    if (!cls) { alert("Please select your class."); $("classSelect").focus(); return false; }
-    if (!name) { alert("Please select your learner name."); $("learnerSelect").focus(); return false; }
-    return true;
+  // ---------- Timer ----------
+  function stopTimer(){ if(T){ clearInterval(T); T=null; } }
+
+  function timerUI(){
+    const m=String(Math.floor(S.r/60)).padStart(2,"0");
+    const s=String(S.r%60).padStart(2,"0");
+    $("timer").textContent = `${m}:${s}`;
+    const p=$("timerPill");
+    p.classList.remove("warn","danger");
+    if(S.r<=300) p.classList.add("warn");
+    if(S.r<=60) p.classList.add("danger");
   }
 
+  function startTimer(){
+    if(T || S.L || S.started===true) return;
+    S.started = true;
+    T = setInterval(()=>{
+      if(S.L) return;
+      S.r = Math.max(0, S.r-1);
+      timerUI();
+      if(S.r % QZ.autosaveSeconds === 0) save({auto:1, t:Date.now()});
+      if(S.r === 0) submit(true);
+    }, 1000);
+  }
+
+  // ---------- Score + submit ----------
   function score(){
     let e=0;
     const br=[];
-    for (let i=0;i<QUESTIONS.length;i++){
-      const q = QUESTIONS[i];
-      const sel = S.A[i];
-      const ok = sel === q.a;
-      if (ok) e++;
+    for(let i=0;i<QZ.questions.length;i++){
+      const q=QZ.questions[i];
+      const sel=S.A[i];
+      const ok=sel===q.a;
+      e += ok ? 1 : 0;
       br.push([i, ok, sel, q.a]);
     }
-    return { e, t: QUESTIONS.length, br };
+    return {e,t:QZ.questions.length,br};
   }
 
-  // =========================
-  // CELEBRATIONS
-  // =========================
-  const rnd = (a,b)=>a+Math.random()*(b-a);
-
   function showToast({e,t,pct,auto,perfect,name,cls}){
-    const box = $("toastBox");
-    box.innerHTML = "";
-    const pass = pct>=50;
-    const toast = document.createElement("div");
-    toast.className = "toast toast-enter";
-    const emoji = perfect ? "🏆" : (pass ? "✅" : "🧠");
-    const status = perfect ? "PERFECT!" : (pass ? "PASS" : "NOT YET");
-
-    toast.innerHTML = `
+    const box=$("toastBox");
+    box.innerHTML="";
+    const pass=pct>=50;
+    const toast=document.createElement("div");
+    toast.className="toast toast-enter";
+    const emoji=perfect?"🏆":(pass?"✅":"🧠");
+    const status=perfect?"PERFECT!":(pass?"PASS":"NOT YET");
+    const ident=`<div class="tMeta" style="margin-top:2px"><strong>${esc(name)}</strong> <span style="opacity:.6">•</span> <strong>${esc(cls)}</strong></div>`;
+    toast.innerHTML=`
       <div class="emoji">${emoji}</div>
       <div style="flex:1;min-width:0">
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <p class="tTitle" style="margin:0">Quiz submitted</p>
           <span class="pill ${pass?"ok":"bad"}">${status}</span>
         </div>
-        <div class="tMeta" style="margin-top:2px"><strong>${esc(name)}</strong> <span style="opacity:.6">•</span> <strong>${esc(cls)}</strong></div>
-        <p class="tMeta">${auto ? "Time is up — your attempt was auto-submitted." : "Submitted successfully."}</p>
+        ${ident}
+        <p class="tMeta">${auto?"Time is up — your attempt was auto-submitted.":"Submitted successfully."}</p>
         <div class="tScore">Score: <strong>${e}/${t}</strong> • <strong>${pct}%</strong></div>
         ${perfect ? "" : `<div class="tMeta" style="margin-top:6px">Try again to improve your mark!</div>`}
       </div>
       <button class="ghost" id="toastClose" style="margin-left:auto">Close</button>
     `;
     box.appendChild(toast);
-
-    const btn = toast.querySelector("#toastClose");
-    btn && btn.addEventListener("click", () => {
+    const btn=toast.querySelector("#toastClose");
+    btn && btn.addEventListener("click",()=>{
       toast.classList.add("toast-blur-exit");
-      setTimeout(()=>toast.remove(), 350);
+      setTimeout(()=>toast.remove(),350);
     });
   }
 
   function confettiBurst(){
-    const cl = $("confettiLayer");
-    cl.innerHTML = "";
-    const n = 140;
-    for (let i=0;i<n;i++){
-      const p = document.createElement("div");
-      p.className = "confettiPiece";
-      p.style.left = rnd(0,100)+"vw";
-      p.style.setProperty("--delay", rnd(0,0.6)+"s");
-      p.style.setProperty("--dur", rnd(2.8,4.2)+"s");
-      p.style.background = ["#b11226","#ffd24a","#1b7f3b","#0b2d4c","#ffffff"][i%5];
-      p.style.width = rnd(7,12)+"px";
-      p.style.height = rnd(10,18)+"px";
+    const cl=$("confettiLayer");
+    cl.innerHTML="";
+    const n=140;
+    for(let i=0;i<n;i++){
+      const p=document.createElement("div");
+      p.className="confettiPiece";
+      p.style.left=rnd(0,100)+"vw";
+      p.style.setProperty("--delay",rnd(0,0.6)+"s");
+      p.style.setProperty("--dur",rnd(2.8,4.2)+"s");
+      p.style.background=["#b11226","#ffd24a","#1b7f3b","#0b2d4c","#ffffff"][i%5];
+      p.style.width=rnd(7,12)+"px";
+      p.style.height=rnd(10,18)+"px";
       cl.appendChild(p);
     }
-    setTimeout(()=>{ cl.innerHTML=""; }, 5200);
+    setTimeout(()=>{cl.innerHTML="";},5200);
   }
 
   function fireworksShow(ms=10000){
-    const ov = $("fxOverlay"), cv = $("fxCanvas"), cg = $("congrats");
-    ov.classList.add("show"); ov.setAttribute("aria-hidden","false");
-    cg && cg.classList.add("rise");
+    const ov=$("fxOverlay"),cv=$("fxCanvas"),cg=$("congrats");
+    ov.classList.add("show");
+    ov.setAttribute("aria-hidden","false");
+    cg.classList.add("rise");
 
-    const ctx = cv.getContext("2d");
+    const ctx=cv.getContext("2d");
     let w=0,h=0;
-    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio||1));
-    const resize = () => {
-      w = ov.clientWidth; h = ov.clientHeight;
-      cv.width = Math.floor(w*dpr); cv.height = Math.floor(h*dpr);
-      cv.style.width=w+"px"; cv.style.height=h+"px";
+    const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+    const resize=()=>{
+      w=ov.clientWidth;h=ov.clientHeight;
+      cv.width=Math.floor(w*dpr);
+      cv.height=Math.floor(h*dpr);
+      cv.style.width=w+"px";
+      cv.style.height=h+"px";
       ctx.setTransform(dpr,0,0,dpr,0,0);
     };
     resize();
-    window.addEventListener("resize", resize, {passive:true});
+    window.addEventListener("resize",resize,{passive:true});
 
     let parts=[];
-    const makeBurst = () => {
-      const x=rnd(w*0.15,w*0.85), y=rnd(h*0.12,h*0.45);
+    const makeBurst=()=>{
+      const x=rnd(w*0.15,w*0.85),y=rnd(h*0.12,h*0.45);
       const count=46;
       const base=["#ffd24a","#ff6b6b","#6bcBef","#a29bfe","#55efc4","#ffffff"];
       for(let i=0;i<count;i++){
-        const ang=rnd(0,Math.PI*2), spd=rnd(1.2,4.2), life=rnd(40,90);
+        const ang=rnd(0,Math.PI*2),spd=rnd(1.2,4.2),life=rnd(40,90);
         parts.push({x,y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,life,max:life,c:base[(i+Math.floor(rnd(0,6)))%base.length],r:rnd(1.2,2.6)});
       }
     };
 
-    let last=0, acc=0, running=true;
-    const step = (ts) => {
+    let last=0,acc=0;
+    let running=true;
+    const step=(ts)=>{
       if(!last) last=ts;
-      const dt=Math.min(32, ts-last); last=ts; acc+=dt;
+      const dt=Math.min(32,ts-last);
+      last=ts;
+      acc+=dt;
 
       ctx.clearRect(0,0,w,h);
       ctx.fillStyle="rgba(0,0,0,.14)";
@@ -607,12 +588,13 @@
 
       for(let i=parts.length-1;i>=0;i--){
         const p=parts[i];
-        p.life -= dt/16;
-        p.vy += 0.06;
-        p.x += p.vx; p.y += p.vy;
-        const k = p.life/p.max;
-        if(k<=0 || p.y>h+40 || p.x<-40 || p.x>w+40){ parts.splice(i,1); continue; }
-        ctx.globalAlpha = Math.max(0,k);
+        p.life-=dt/16;
+        p.vy+=0.06;
+        p.x+=p.vx;
+        p.y+=p.vy;
+        const k=p.life/p.max;
+        if(k<=0||p.y>h+40||p.x<-40||p.x>w+40){parts.splice(i,1);continue;}
+        ctx.globalAlpha=Math.max(0,k);
         ctx.beginPath();
         ctx.fillStyle=p.c;
         ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
@@ -620,123 +602,48 @@
       }
       ctx.globalAlpha=1;
 
-      if(acc>520){ acc=0; makeBurst(); }
+      if(acc>520){acc=0;makeBurst();}
       if(running) requestAnimationFrame(step);
     };
 
-    makeBurst(); makeBurst(); requestAnimationFrame(step);
+    makeBurst();makeBurst();
+    requestAnimationFrame(step);
 
     setTimeout(()=>{
       running=false;
-      window.removeEventListener("resize", resize);
-      ov.classList.remove("show"); ov.setAttribute("aria-hidden","true");
-      cg && cg.classList.remove("rise");
+      window.removeEventListener("resize",resize);
+      ov.classList.remove("show");
+      ov.setAttribute("aria-hidden","true");
+      cg.classList.remove("rise");
       ctx.clearRect(0,0,w,h);
-    }, ms);
+    },ms);
   }
 
   function celebrate({e,t,pct,auto,name,cls}){
     const perfect = pct===100;
     confettiBurst();
     showToast({e,t,pct,auto,perfect,name,cls});
-    if(perfect) setTimeout(()=>fireworksShow(10000), 300);
+    if(perfect) setTimeout(()=>fireworksShow(10000),300);
   }
 
-  // =========================
-  // STORAGE + TIMER
-  // =========================
-  function save(){
-    const payload = {
-      i: { learnerName: $("learnerName").value, className: $("className").value, classSel: $("classSelect").value, learnerSel: $("learnerSelect").value, gradeLine: $("gradeLine").textContent },
-      s: { c:S.c, r:S.r, A:S.A, F:S.F, L:S.L, seed:S.seed }
-    };
-    localStorage.setItem(KEY, JSON.stringify(payload));
-  }
-
-  function load(){
-    const raw = localStorage.getItem(KEY);
-    if(!raw) return;
-    try{
-      const d = JSON.parse(raw);
-      if(d.i){
-        $("learnerName").value = d.i.learnerName || "";
-        $("className").value = d.i.className || "";
-        $("gradeLine").textContent = d.i.gradeLine || "Grade: —";
-      }
-      if(d.s){
-        S.c = Number.isFinite(d.s.c) ? d.s.c : 0;
-        S.r = Number.isFinite(d.s.r) ? d.s.r : S.r;
-        S.A = d.s.A || {};
-        S.F = d.s.F || {};
-        S.L = !!d.s.L;
-        S.seed = d.s.seed ?? null;
-      }
-    }catch(e){}
-  }
-
-  function stop(){ if(T){ clearInterval(T); T=null; } }
-
-  function tUI(){
-    const m = String(Math.floor(S.r/60)).padStart(2,"0");
-    const s = String(S.r%60).padStart(2,"0");
-    $("timer").textContent = `${m}:${s}`;
-    const p = $("timerPill");
-    p.classList.remove("warn","danger");
-    if(S.r<=300) p.classList.add("warn");
-    if(S.r<=60) p.classList.add("danger");
-  }
-
-  function start(){
-    if(T || S.L) return;
-    T = setInterval(()=>{
-      if(S.L) return;
-      S.r = Math.max(0, S.r-1);
-      tUI();
-      if(S.r % QZ.autosaveSeconds === 0) save();
-      if(S.r === 0) submit(true);
-    }, 1000);
-  }
-
-  function reset(){
-    try{ localStorage.removeItem(KEY); }catch(e){}
-    stop();
-    S = { c:0, r: QZ.durationMinutes*60, A:{}, F:{}, L:false, seed:null };
-    $("result").style.display="none";
-    $("result").innerHTML="";
-    $("toastBox").innerHTML="";
-    $("confettiLayer").innerHTML="";
-    $("learnerName").value="";
-    $("className").value="";
-    $("gradeLine").textContent="Grade: —";
-    $("classSelect").value="";
-    $("learnerSelect").innerHTML=`<option value="">Select learner...</option>`;
-    $("learnerSelect").disabled=true;
-
-    QUESTIONS = build100Questions();
-    $("totalQ").textContent = String(QUESTIONS.length);
-
-    nav(); render(); navUI(); tUI(); start(); save();
-  }
-
-  // =========================
-  // SUBMIT
-  // =========================
   function submit(auto=false){
     if(S.L) return;
-    if(!idOK()) return;
+    if(!canAnswer()){
+      alert("Please select Class and Learner first.");
+      return;
+    }
 
-    // IMPORTANT: seed shuffle AFTER learner chosen, so each learner gets stable shuffle
-    if(S.seed == null) shuffleOptionsDeterministic();
+    S.L=true;
+    stopTimer();
 
-    S.L = true;
-    stop();
-    navUI(); render();
+    navUI();
+    render();
 
-    const { e, t, br } = score();
-    const pct = Math.round((e/t)*100);
-    const pass = pct>=50;
-    const name = ($("learnerName").value || "").trim();
-    const cls  = ($("className").value || "").trim();
+    const {e,t,br}=score();
+    const pct=Math.round(e/t*100);
+    const pass=pct>=50;
+    const name=S.learner_full_name || $("learnerName").value.trim();
+    const cls=S.class_name || $("className").value.trim();
 
     celebrate({e,t,pct,auto,name,cls});
 
@@ -744,7 +651,7 @@
       <div class="score">
         <div>
           <div class="big">${esc(name)} (${esc(cls)}) — ${e}/${t} • ${pct}%</div>
-          <div class="small">${auto ? "Auto-submitted when time ended." : "Submitted."}</div>
+          <div class="small">${auto?"Auto-submitted when time ended.":"Submitted."}</div>
         </div>
         <div class="badge ${pass?"ok":"bad"}">${pass?"PASS":"NOT YET"}</div>
       </div>
@@ -755,15 +662,15 @@
         <details class="review" open>
           <summary>Review answers</summary>
           <ol class="review-list">
-            ${br.map(b=>{
-              const i=b[0], ok=b[1], sel=b[2], cor=b[3], q=QUESTIONS[i];
-              const your = sel===undefined ? "No answer" : q.o[sel];
+            ${br.map(([i,ok,sel,cor])=>{
+              const q=QZ.questions[i];
+              const your = sel===void 0 ? "No answer" : q.o[sel];
               const ca = q.o[cor];
               return `
                 <li>
                   <div><strong>${esc(q.t)}</strong> <span class="${ok?"correct":"wrong"}">(${ok?"Correct":"Incorrect"})</span></div>
-                  <div>Your a: ${esc(String(your))}</div>
-                  ${ok ? "" : `<div>Correct a: <span class="correct">${esc(String(ca))}</span></div>`}
+                  <div>Your answer: ${esc(String(your))}</div>
+                  ${ok ? "" : `<div>Correct answer: <span class="correct">${esc(String(ca))}</span></div>`}
                 </li>
               `;
             }).join("")}
@@ -772,82 +679,316 @@
       `;
     }
 
-    $("result").innerHTML = html;
-    $("result").style.display = "block";
-    save();
-    $("result").scrollIntoView({behavior:"smooth", block:"start"});
+    $("result").innerHTML=html;
+    $("result").style.display="block";
+
+    save({submitted:1,pct,auto,t:Date.now()});
+    $("result").scrollIntoView({behavior:"smooth",block:"start"});
   }
 
-  // =========================
-  // EVENTS
-  // =========================
+  // ---------- Save / Load ----------
+  function save(extra={}){
+    const payload = {
+      s:{
+        c:S.c,r:S.r,A:S.A,F:S.F,L:S.L,started:S.started,seed:S.seed,
+        class_name:S.class_name,learner_id:S.learner_id,learner_full_name:S.learner_full_name,grade:S.grade,
+        optionsShuffled
+      },
+      x:extra
+    };
+    localStorage.setItem(KEY, JSON.stringify(payload));
+  }
+
+  function load(){
+    const raw=localStorage.getItem(KEY);
+    if(!raw) return;
+    try{
+      const d=JSON.parse(raw);
+      if(d && d.s){
+        const s=d.s;
+        S.c = Number.isFinite(s.c) ? s.c : 0;
+        S.r = Number.isFinite(s.r) ? s.r : S.r;
+        S.A = s.A || {};
+        S.F = s.F || {};
+        S.L = !!s.L;
+        S.started = !!s.started;
+        S.seed = s.seed ?? null;
+        S.class_name = s.class_name || "";
+        S.learner_id = s.learner_id || "";
+        S.learner_full_name = s.learner_full_name || "";
+        S.grade = Number.isFinite(s.grade) ? s.grade : null;
+        optionsShuffled = !!s.optionsShuffled;
+
+        // reflect fields
+        if(S.class_name) $("className").value = S.class_name;
+        if(S.learner_full_name) $("learnerName").value = S.learner_full_name;
+        if(Number.isFinite(S.grade)) $("gradeLabel").textContent = String(S.grade);
+      }
+    }catch(e){}
+  }
+
+  function resetAll(){
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    stopTimer();
+    optionsShuffled = false;
+    S = {
+      c:0,r:QZ.durationMinutes*60,A:{},F:{},L:false,started:false,seed:null,
+      class_name:"",learner_id:"",learner_full_name:"",grade:null
+    };
+    $("result").style.display="none";
+    $("result").innerHTML="";
+    $("toastBox").innerHTML="";
+    $("confettiLayer").innerHTML="";
+    $("gradeLabel").textContent="—";
+    $("learnerName").value="";
+    $("className").value="";
+    $("classSelect").value="";
+    $("learnerSelect").innerHTML=`<option value="">Select learner...</option>`;
+    $("learnerSelect").disabled=true;
+
+    // re-load class list
+    loadClasses().catch(()=>{});
+    nav();
+    render();
+    navUI();
+    timerUI();
+    save({reset:1,t:Date.now()});
+  }
+
+  // ---------- Events ----------
   function bind(){
-    document.addEventListener("change", (e)=>{
+    document.addEventListener("change",(e)=>{
       if(S.L) return;
-      const t = e.target;
+      const t=e.target;
       if(t && t.matches('input[type="radio"][name^="q_"]')){
-        const qi = +t.name.split("_")[1];
-        S.A[qi] = +t.value;
-        navUI(); save();
+        if(!canAnswer()) return;
+        const qi=+t.name.split("_")[1];
+        S.A[qi]=+t.value;
+        navUI();
+        save({ans:1,t:Date.now()});
       }
     });
 
-    $("prevBtn").addEventListener("click", ()=>{ if(S.L||S.c===0) return; S.c--; render(); navUI(); save(); });
-    $("nextBtn").addEventListener("click", ()=>{ if(S.L||S.c===QUESTIONS.length-1) return; S.c++; render(); navUI(); save(); });
-    $("flagBtn").addEventListener("click", ()=>{ if(S.L) return; S.F[S.c]=!S.F[S.c]; render(); navUI(); save(); });
-    $("submitBtn").addEventListener("click", (e)=>{ e.preventDefault(); if(S.L) return; submit(false); });
-    $("finishAttemptBtn").addEventListener("click", ()=>{
+    $("prevBtn").addEventListener("click",()=>{
+      if(S.L || S.c===0) return;
+      S.c--; render(); navUI(); save({nav:1});
+    });
+    $("nextBtn").addEventListener("click",()=>{
+      if(S.L || S.c===QZ.questions.length-1) return;
+      S.c++; render(); navUI(); save({nav:1});
+    });
+    $("flagBtn").addEventListener("click",()=>{
       if(S.L) return;
-      const u = unansweredCount();
-      const fl = Object.values(S.F).filter(Boolean).length;
+      S.F[S.c]=!S.F[S.c];
+      render(); navUI(); save({flag:1});
+    });
+
+    $("submitBtn").addEventListener("click",(e)=>{
+      e.preventDefault(); e.stopPropagation();
+      submit(false);
+    });
+
+    $("finishAttemptBtn").addEventListener("click",()=>{
+      if(S.L) return;
+      const u=unansweredCount();
+      const fl=Object.values(S.F).filter(Boolean).length;
       alert(`Finish attempt\n\nUnanswered: ${u}\nFlagged: ${fl}\n\nClick “Submit all and finish” to submit.`);
     });
-    $("saveBtn").addEventListener("click", ()=>{ if(S.L) return; save(); alert("Saved on this device."); });
-    $("resetBtn").addEventListener("click", reset);
+
+    $("saveBtn").addEventListener("click",()=>{
+      if(S.L) return;
+      save({manual:1,t:Date.now()});
+      alert("Saved on this device.");
+    });
+
+    $("resetBtn").addEventListener("click",()=>{
+      if(confirm("Reset this attempt on this device?")){
+        resetAll();
+      }
+    });
+
+    $("classSelect").addEventListener("change", async ()=>{
+      if(S.L) return;
+      const v = $("classSelect").value || "";
+      S.class_name = v;
+      S.learner_id = "";
+      S.learner_full_name = "";
+      S.grade = null;
+      S.seed = null;
+      optionsShuffled = false;
+      $("className").value = v;
+      $("learnerName").value = "";
+      $("gradeLabel").textContent = "—";
+
+      $("learnerSelect").disabled = !v;
+      $("learnerSelect").innerHTML = `<option value="">Select learner...</option>`;
+
+      if(v){
+        await loadLearnersForClass(v);
+      }
+      render(); navUI(); save({class:1});
+    });
+
+    $("learnerSelect").addEventListener("change", ()=>{
+      if(S.L) return;
+      const id = $("learnerSelect").value || "";
+      const opt = $("learnerSelect").selectedOptions[0];
+      const full = opt?.getAttribute("data-full") || "";
+      const grade = opt?.getAttribute("data-grade");
+      S.learner_id = id;
+      S.learner_full_name = full;
+      S.grade = grade ? parseInt(grade,10) : null;
+
+      $("learnerName").value = full;
+      $("gradeLabel").textContent = Number.isFinite(S.grade) ? String(S.grade) : "—";
+
+      // Once learner selected: shuffle options and start timer (first time only)
+      shuffleOptionsDeterministic();
+      startTimer();
+
+      render(); navUI(); save({learner:1});
+    });
   }
 
-  // =========================
-  // INIT
-  // =========================
-  async function init(){
+  // ---------- Supabase (classes + learners) ----------
+  function initSupabase(){
     try{
+      if(!window.supabase) throw new Error("Supabase JS not loaded");
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }catch(e){
+      console.warn("Supabase init failed:", e);
+      supabase = null;
+    }
+  }
+
+  async function loadClasses(){
+    const cs = $("classSelect");
+    cs.innerHTML = `<option value="">Select class...</option>`;
+
+    if(!supabase){
+      cs.innerHTML += `<option value="">(Supabase not connected)</option>`;
+      return;
+    }
+
+    // Pull distinct class_name + grade from learners
+    const { data, error } = await supabase
+      .from("learners")
+      .select("class_name,grade")
+      .not("class_name","is",null)
+      .order("grade",{ascending:true})
+      .order("class_name",{ascending:true});
+
+    if(error){
+      console.error("loadClasses error:", error);
+      cs.innerHTML += `<option value="">(Error loading classes)</option>`;
+      return;
+    }
+
+    // De-dup
+    const seen = new Set();
+    const rows = [];
+    for(const r of (data||[])){
+      const key = `${r.grade||""}|${r.class_name||""}`;
+      if(!r.class_name) continue;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      rows.push(r);
+    }
+
+    for(const r of rows){
+      const opt = document.createElement("option");
+      opt.value = r.class_name;
+      opt.textContent = r.grade ? `${r.class_name} (Grade ${r.grade})` : r.class_name;
+      cs.appendChild(opt);
+    }
+
+    // restore saved selection
+    if(S.class_name){
+      cs.value = S.class_name;
+      $("className").value = S.class_name;
+      $("learnerSelect").disabled = false;
+      await loadLearnersForClass(S.class_name);
+
+      if(S.learner_id){
+        $("learnerSelect").value = S.learner_id;
+      }
+      if(S.learner_full_name){
+        $("learnerName").value = S.learner_full_name;
+      }
+      if(Number.isFinite(S.grade)){
+        $("gradeLabel").textContent = String(S.grade);
+      }
+    }
+  }
+
+  async function loadLearnersForClass(className){
+    const ls = $("learnerSelect");
+    ls.innerHTML = `<option value="">Select learner...</option>`;
+
+    if(!supabase){
+      ls.innerHTML = `<option value="">(Supabase not connected)</option>`;
+      ls.disabled = true;
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("learners")
+      .select("id,full_name,first_name,surname,grade,class_name")
+      .eq("class_name", className)
+      .order("surname",{ascending:true})
+      .order("first_name",{ascending:true});
+
+    if(error){
+      console.error("loadLearnersForClass error:", error);
+      ls.innerHTML = `<option value="">(Error loading learners)</option>`;
+      return;
+    }
+
+    for(const r of (data||[])){
+      const full = r.full_name || [r.first_name,r.surname].filter(Boolean).join(" ").trim();
+      const opt = document.createElement("option");
+      opt.value = r.id;
+      opt.textContent = full || "(Unnamed)";
+      opt.setAttribute("data-full", full || "");
+      opt.setAttribute("data-grade", String(r.grade ?? ""));
+      ls.appendChild(opt);
+    }
+  }
+
+  // ---------- Init ----------
+  function init(){
+    try{
+      // Titles
       $("courseTitle").textContent = QZ.courseTitle;
       $("quizTitle").textContent = QZ.quizTitle;
       $("mainTitle").textContent = QZ.attemptTitle;
       $("mainSub").textContent = QZ.instructions;
 
-      load();
+      // Hard check 100 questions BEFORE anything else
+      hardCheck100();
 
-      // Always refresh questions (guarantees 100 even if storage got weird)
-      QUESTIONS = build100Questions();
-      $("totalQ").textContent = String(QUESTIONS.length);
-
-      // Load dropdowns
-      await loadClasses();
-      hookDropdowns();
-
+      // Render FIRST (prevents "blank page" even if Supabase fails)
       nav();
       render();
       bind();
       navUI();
-      tUI();
-      start();
+      timerUI();
 
-      // If class/learner were already saved, try restore dropdown selections
-      const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
-      if(saved.i && saved.i.classSel){
-        $("classSelect").value = saved.i.classSel;
-        $("className").value = saved.i.classSel;
-        await loadLearnersForClass(saved.i.classSel);
-        if(saved.i.learnerSel){
-          $("learnerSelect").value = saved.i.learnerSel;
-          const opt = $("learnerSelect").selectedOptions[0];
-          if(opt){
-            $("learnerName").value = opt.dataset.fullName || "";
-            $("gradeLine").textContent = `Grade: ${opt.dataset.grade || "—"}`;
-          }
-        }
-      }
+      // Load state
+      load();
+      navUI();
+      render();
+      timerUI();
+
+      // Supabase after render
+      initSupabase();
+      loadClasses().catch(()=>{});
+
+      // If already started earlier, resume timer
+      if(S.started && !S.L) startTimer();
+
+      // Always autosave
+      save({boot:1,t:Date.now()});
 
     }catch(e){
       console.error(e);
@@ -856,7 +997,7 @@
         <div class="qhead">
           <div>
             <div class="qnum">Teacher note: Quiz failed to load</div>
-            <div class="qtext">A script error stopped the quiz from showing questions.</div>
+            <div class="qtext">${esc(e.message || "Unknown error")}</div>
           </div>
           <div class="qpts">Fix required</div>
         </div>
@@ -868,9 +1009,138 @@
   }
 
   window.addEventListener("DOMContentLoaded", init);
-  window.__qz_submit = (auto) => submit(!!auto);
-  window.__qz_reset = () => reset();
-  window.__qz_state = () => ({locked:S.L, answered:Object.keys(S.A).length, remaining:S.r});
+
+  // ---------- Question bank (100 total) ----------
+  function build100Questions(){
+    // 100 Grade 4–7 friendly questions (Coding, Robotics, Typing, Windows, Safety)
+    const qs = [
+      {t:"What is an algorithm?",o:["A computer","A step-by-step set of instructions","A robot","A mistake"],a:1},
+      {t:"A loop is used to…",o:["Repeat instructions","Delete files","Turn off a computer","Open a website"],a:0},
+      {t:"Debugging means…",o:["Finding and fixing mistakes","Making the screen brighter","Charging a laptop","Printing a page"],a:0},
+      {t:"Which is a block-coding tool for learners?",o:["Scratch","PowerPoint","Calculator","Camera"],a:0},
+      {t:"Which comes first when solving a problem?",o:["Plan","Copy","Guess","Skip"],a:0},
+      {t:"What is a program?",o:["A set of instructions for a computer","A type of keyboard","A battery","A monitor"],a:0},
+      {t:"An IF statement is used to…",o:["Make a choice/decision","Print a document","Charge a device","Open the Start menu"],a:0},
+      {t:"Which is an example of a condition?",o:["If score is > 10","Draw a circle","Press spacebar","Open Chrome"],a:0},
+      {t:"Which is an example of output?",o:["Sound from speakers","Mouse click","Keyboard typing","Touchpad tap"],a:0},
+      {t:"Which is an example of input?",o:["Printer page","Monitor picture","Keyboard key press","Speaker sound"],a:2},
+
+      {t:"What does CPU stand for?",o:["Central Processing Unit","Computer Power Unit","Control Program User","Central Print Unit"],a:0},
+      {t:"A bug in code is a…",o:["Mistake/error","Type of mouse","Good idea","Battery"],a:0},
+      {t:"Why do we test programs?",o:["To find problems","To make them slower","To delete them","To waste time"],a:0},
+      {t:"Which is a good coding habit?",o:["Test often","Never save","Skip instructions","Rush"],a:0},
+      {t:"What does SAVE do?",o:["Stores your work","Deletes your work","Turns off Wi-Fi","Changes the wallpaper"],a:0},
+      {t:"Which is a sequence?",o:["Steps in order","A random guess","A picture","A battery"],a:0},
+      {t:"Which word means 'repeat'?",o:["Loop","Stop","Close","Exit"],a:0},
+      {t:"What is decomposition?",o:["Breaking a big problem into smaller parts","Making a robot faster","Cleaning a laptop","Typing without looking"],a:0},
+      {t:"Pattern recognition means…",o:["Finding things that repeat","Deleting patterns","Printing patterns","Charging patterns"],a:0},
+      {t:"Abstraction means…",o:["Focusing on important details","Adding extra details","Making it confusing","Turning off the screen"],a:0},
+
+      {t:"Which is an example of an instruction?",o:["Move forward","Blue","Laptop","Triangle"],a:0},
+      {t:"A flowchart is used to…",o:["Show steps of a process","Play music","Charge devices","Take photos"],a:0},
+      {t:"In a flowchart, a diamond usually means…",o:["Decision","Start","End","Data"],a:0},
+      {t:"In a flowchart, a rectangle usually means…",o:["Process/Action","Decision","Start","Arrow"],a:0},
+      {t:"A variable is like a…",o:["Box that stores information","Type of printer","Mouse pointer","Battery"],a:0},
+
+      {t:"typing.com helps you practise…",o:["Typing","Drawing","Singing","Cooking"],a:0},
+      {t:"Which key starts a new line?",o:["Enter","Shift","Ctrl","Alt"],a:0},
+      {t:"Which key makes a space?",o:["Spacebar","Tab","Caps Lock","Esc"],a:0},
+      {t:"Which key deletes to the LEFT?",o:["Backspace","Delete","Enter","Windows"],a:0},
+      {t:"Which key deletes to the RIGHT?",o:["Delete","Backspace","Shift","Tab"],a:0},
+      {t:"Caps Lock is used to…",o:["Type in capitals","Open a file","Print","Save"],a:0},
+      {t:"Good posture means…",o:["Sit upright","Lie down","Look away","Use one finger"],a:0},
+      {t:"Accuracy means…",o:["Few mistakes","Very loud typing","Only speed","No punctuation"],a:0},
+      {t:"Touch typing means…",o:["Typing without looking at keys","Typing with a touchscreen","Typing slowly","Typing in all caps"],a:0},
+      {t:"Home row includes…",o:["A S D F","Q W E R","Z X C V","1 2 3 4"],a:0},
+
+      {t:"Which finger often presses the spacebar?",o:["Thumb","Index","Middle","Little"],a:0},
+      {t:"Tab key is often used to…",o:["Move to next field/indent","Turn off laptop","Print","Delete a file"],a:0},
+      {t:"Shift key is used to…",o:["Make capital letters / symbols","Open Start menu","Save","Close"],a:0},
+      {t:"Why should you keep eyes on the screen?",o:["To build touch-typing","To type slower","To make more errors","To waste time"],a:0},
+      {t:"Which is a punctuation mark?",o:[".","7","A","Ctrl"],a:0},
+      {t:"Which key makes a question mark on many keyboards?",o:["Shift + /","Ctrl + ?","Alt + ?","Windows + ?"],a:0},
+      {t:"Typing speed is usually measured in…",o:["WPM","KM","Volts","Pixels"],a:0},
+      {t:"If you make a mistake, you should…",o:["Use Backspace and fix it","Ignore it always","Close the laptop","Unplug the charger"],a:0},
+      {t:"A shortcut is…",o:["A faster way to do something","A kind of mouse","A printer","A battery"],a:0},
+      {t:"Which shortcut saves in many apps?",o:["Ctrl + S","Ctrl + P","Ctrl + C","Ctrl + V"],a:0},
+
+      {t:"Ctrl + C usually means…",o:["Copy","Cut","Close","Caps"],a:0},
+      {t:"Ctrl + V usually means…",o:["Paste","Print","Pause","Preview"],a:0},
+      {t:"Ctrl + X usually means…",o:["Cut","Copy","Undo","Redo"],a:0},
+      {t:"Ctrl + Z usually means…",o:["Undo","Zoom","Zip","Zero"],a:0},
+      {t:"Ctrl + A usually means…",o:["Select all","Save","Print","Search"],a:0},
+
+      {t:"Windows is a(n)…",o:["Operating system","Browser","Game","Keyboard"],a:0},
+      {t:"The Windows key usually opens…",o:["Start menu","Camera","Printer","Calculator only"],a:0},
+      {t:"The touchpad controls the…",o:["Pointer/cursor","Speaker","Battery","Keyboard lights"],a:0},
+      {t:"The power button is used to…",o:["Turn device on/off","Type letters","Print","Take photos"],a:0},
+      {t:"Which is safe laptop behaviour?",o:["Keep drinks away","Shake the laptop","Pull the charger to turn off","Hit the keyboard"],a:0},
+      {t:"A file is…",o:["A saved document or item","A type of mouse","A keyboard key","A battery"],a:0},
+      {t:"A folder is used to…",o:["Organise files","Play music","Charge the laptop","Change passwords"],a:0},
+      {t:"Which icon closes a window?",o:["X","□","–","?"],a:0},
+      {t:"Minimise means…",o:["Hide a window to the taskbar","Delete a file","Turn off Wi-Fi","Print"],a:0},
+      {t:"Maximise means…",o:["Make the window full screen","Make it smaller","Delete it","Send it to the printer"],a:0},
+
+      {t:"Wi-Fi is used to…",o:["Connect to the internet","Charge the battery","Make the screen bigger","Type faster"],a:0},
+      {t:"A browser is used to…",o:["Visit websites","Charge devices","Write with a pen","Build robots"],a:0},
+      {t:"Which is a browser?",o:["Google Chrome","Windows","Keyboard","Touchpad"],a:0},
+      {t:"A password should be…",o:["Kept private","Shared with friends","Written on the desk","Very short"],a:0},
+      {t:"What does Ctrl + P do in many apps?",o:["Print","Paste","Pause","Power off"],a:0},
+      {t:"The taskbar is usually at the…",o:["Bottom of the screen","Top only","Middle","It is invisible"],a:0},
+      {t:"An app is…",o:["A program you use","A cable","A battery","A folder"],a:0},
+      {t:"To shut down properly you should…",o:["Use Shut down option","Pull the plug","Close the lid always","Press random keys"],a:0},
+      {t:"If a laptop is overheating, you should…",o:["Tell the teacher","Cover it with a book","Put it in the sun","Pour water"],a:0},
+      {t:"A screenshot is a…",o:["Picture of the screen","Type of battery","Robot move","Printer file"],a:0},
+
+      {t:"Which key combo switches between open apps?",o:["Alt + Tab","Ctrl + S","Shift + Enter","Windows + P"],a:0},
+      {t:"Volume buttons control…",o:["Sound","Typing speed","Wi-Fi","Battery"],a:0},
+      {t:"Brightness controls…",o:["How light the screen is","How loud it is","How fast Wi-Fi is","How many files"],a:0},
+      {t:"A charger is used to…",o:["Recharge the battery","Print pages","Open websites","Type"],a:0},
+      {t:"Which is hardware?",o:["Keyboard","Windows","Website","Typing.com"],a:0},
+      {t:"Which is software?",o:["Windows","Mouse","Screen","USB cable"],a:0},
+      {t:"A USB port is used to…",o:["Plug in devices","Turn on Wi-Fi","Change wallpaper","Delete files"],a:0},
+      {t:"A mouse pointer is also called a…",o:["Cursor","Battery","Folder","Speaker"],a:0},
+      {t:"Double-click means…",o:["Click twice quickly","Hold the mouse","Press Enter","Turn off"],a:0},
+
+      {t:"Sphero is a…",o:["Programmable robot ball","Printer","Keyboard","Monitor"],a:0},
+      {t:"Sphero Edu is used to…",o:["Code Sphero","Cook food","Print","Draw"],a:0},
+      {t:"When Sphero moves, it uses…",o:["Motors","Ink","Paper","Keys"],a:0},
+      {t:"A sensor helps a robot…",o:["Detect things","Eat","Sleep","Write"],a:0},
+      {t:"A loop can make Sphero…",o:["Repeat actions","Lose battery instantly","Break","Freeze always"],a:0},
+      {t:"To make Sphero stop, you use…",o:["Stop block","Start menu","Caps Lock","Print"],a:0},
+      {t:"Which is a good robotics skill?",o:["Problem-solving","Guessing","Shouting","Rushing"],a:0},
+      {t:"If Sphero goes the wrong way, you should…",o:["Check the code","Throw it","Ignore it","Unplug Wi-Fi"],a:0},
+      {t:"Robots follow…",o:["Instructions","Feelings","Luck","Noise"],a:0},
+      {t:"What is a safe rule for Sphero use?",o:["Use gently and follow rules","Kick it","Use near water","Throw at friends"],a:0},
+
+      // Fill to 100 with extra relevant items (10)
+      {t:"What does Bluetooth help devices do?",o:["Connect wirelessly nearby","Print photos","Charge batteries","Delete files"],a:0},
+      {t:"Which is the best way to keep your account safe?",o:["Use a strong password and keep it secret","Share password with friends","Use '1234'","Write it on the desk"],a:0},
+      {t:"Which is an example of 'output' from a robot?",o:["Robot LED lights up","You press a button","You type a key","You click a mouse"],a:0},
+      {t:"In coding, a 'bug' is usually…",o:["An error in the code","A type of keyboard","A USB cable","A website"],a:0},
+      {t:"Why do we comment code?",o:["To explain what the code does","To make code slower","To delete code","To hide the code"],a:0},
+      {t:"What is a 'programming language'?",o:["A way to write instructions for computers","A type of internet","A file folder","A battery type"],a:0},
+      {t:"What should you do before unplugging a laptop charger?",o:["Hold the plug and pull gently","Pull the cable hard","Kick the plug","Shake the laptop"],a:0},
+      {t:"What is the main job of RAM?",o:["Temporarily stores data while working","Plays sound","Prints documents","Connects Wi-Fi"],a:0},
+      {t:"In Scratch, a 'sprite' is…",o:["A character/object you control","A keyboard","A browser tab","A printer"],a:0},
+      {t:"A good way to improve in robotics is to…",o:["Build, test, and improve","Never test","Give up quickly","Copy without understanding"],a:0}
+    ];
+
+    // Final safety check
+    if(qs.length !== 100){
+      // If this ever triggers, you’ll see the exact number in the error toast box.
+      // But we want it to crash loudly in dev, not silently.
+      throw new Error("Question builder produced "+qs.length+" questions (must be 100).");
+    }
+
+    return qs;
+  }
+
+  // expose helpers if you want
+  window.__qz_state=()=>({locked:S.L,answered:Object.keys(S.A).length,remaining:S.r,started:S.started,class:S.class_name,learner:S.learner_full_name});
+  window.__qz_submit=(auto)=>submit(!!auto);
+  window.__qz_reset=()=>resetAll();
+
 })();
 </script>
 </body>
