@@ -70,6 +70,7 @@
     .main-title{margin:0;font-size:22px;font-weight:1000}
     .main-sub{margin:6px 0 0;font-size:13px;color:var(--muted)}
     .panel{padding:14px 18px 18px;position:relative}
+    /* watermark */
     .panel::before{
       content:"";position:absolute;inset:0;pointer-events:none;opacity:.06;
       background-image:url("disa-logo.png");
@@ -121,7 +122,20 @@
       margin-top:12px;
       font-weight:900;
     }
+    .errorBox{
+      border:1px solid rgba(180,35,24,.25);
+      background:#fff5f5;
+      color:#6b0f0a;
+      border-radius:14px;
+      padding:12px 14px;
+      margin-top:12px;
+      font-weight:900;
+      white-space:pre-wrap;
+    }
+
     @media print{.topbar,.side,.tools,.flagbtn,#toastLayer,.fxOverlay{display:none!important}body{background:#fff}.wrap{grid-template-columns:1fr}.main{box-shadow:none}}
+
+    /* Toast + FX */
     #toastLayer{position:fixed;inset:0;pointer-events:none;z-index:9999}
     #toastBox{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:min(560px,calc(100% - 28px));pointer-events:none}
     .toast{pointer-events:auto;background:rgba(255,255,255,.96);border:1px solid rgba(223,227,234,.95);
@@ -276,159 +290,6 @@
   const $ = (id)=>document.getElementById(id);
   const KEY = "disa_quiz_100q_v3_supabase";
 
-  // ---------- Question bank (100 total, NEVER throws) ----------
-  function build100Questions(){
-    const qs = [
-      {t:"What is an algorithm?",o:["A computer","A step-by-step set of instructions","A robot","A mistake"],a:1},
-      {t:"A loop is used to…",o:["Repeat instructions","Delete files","Turn off a computer","Open a website"],a:0},
-      {t:"Debugging means…",o:["Finding and fixing mistakes","Making the screen brighter","Charging a laptop","Printing a page"],a:0},
-      {t:"Which is a block-coding tool for learners?",o:["Scratch","PowerPoint","Calculator","Camera"],a:0},
-      {t:"Which comes first when solving a problem?",o:["Plan","Copy","Guess","Skip"],a:0},
-      {t:"What is a program?",o:["A set of instructions for a computer","A type of keyboard","A battery","A monitor"],a:0},
-      {t:"An IF statement is used to…",o:["Make a choice/decision","Print a document","Charge a device","Open the Start menu"],a:0},
-      {t:"Which is an example of a condition?",o:["If score is > 10","Draw a circle","Press spacebar","Open Chrome"],a:0},
-      {t:"Which is an example of output?",o:["Sound from speakers","Mouse click","Keyboard typing","Touchpad tap"],a:0},
-      {t:"Which is an example of input?",o:["Printer page","Monitor picture","Keyboard key press","Speaker sound"],a:2},
-
-      {t:"What does CPU stand for?",o:["Central Processing Unit","Computer Power Unit","Control Program User","Central Print Unit"],a:0},
-      {t:"A bug in code is a…",o:["Mistake/error","Type of mouse","Good idea","Battery"],a:0},
-      {t:"Why do we test programs?",o:["To find problems","To make them slower","To delete them","To waste time"],a:0},
-      {t:"Which is a good coding habit?",o:["Test often","Never save","Skip instructions","Rush"],a:0},
-      {t:"What does SAVE do?",o:["Stores your work","Deletes your work","Turns off Wi-Fi","Changes the wallpaper"],a:0},
-      {t:"Which is a sequence?",o:["Steps in order","A random guess","A picture","A battery"],a:0},
-      {t:"Which word means 'repeat'?",o:["Loop","Stop","Close","Exit"],a:0},
-      {t:"What is decomposition?",o:["Breaking a big problem into smaller parts","Making a robot faster","Cleaning a laptop","Typing without looking"],a:0},
-      {t:"Pattern recognition means…",o:["Finding things that repeat","Deleting patterns","Printing patterns","Charging patterns"],a:0},
-      {t:"Abstraction means…",o:["Focusing on important details","Adding extra details","Making it confusing","Turning off the screen"],a:0},
-
-      {t:"Which is an example of an instruction?",o:["Move forward","Blue","Laptop","Triangle"],a:0},
-      {t:"A flowchart is used to…",o:["Show steps of a process","Play music","Charge devices","Take photos"],a:0},
-      {t:"In a flowchart, a diamond usually means…",o:["Decision","Start","End","Data"],a:0},
-      {t:"In a flowchart, a rectangle usually means…",o:["Process/Action","Decision","Start","Arrow"],a:0},
-      {t:"A variable is like a…",o:["Box that stores information","Type of printer","Mouse pointer","Battery"],a:0},
-
-      {t:"typing.com helps you practise…",o:["Typing","Drawing","Singing","Cooking"],a:0},
-      {t:"Which key starts a new line?",o:["Enter","Shift","Ctrl","Alt"],a:0},
-      {t:"Which key makes a space?",o:["Spacebar","Tab","Caps Lock","Esc"],a:0},
-      {t:"Which key deletes to the LEFT?",o:["Backspace","Delete","Enter","Windows"],a:0},
-      {t:"Which key deletes to the RIGHT?",o:["Delete","Backspace","Shift","Tab"],a:0},
-      {t:"Caps Lock is used to…",o:["Type in capitals","Open a file","Print","Save"],a:0},
-      {t:"Good posture means…",o:["Sit upright","Lie down","Look away","Use one finger"],a:0},
-      {t:"Accuracy means…",o:["Few mistakes","Very loud typing","Only speed","No punctuation"],a:0},
-      {t:"Touch typing means…",o:["Typing without looking at keys","Typing with a touchscreen","Typing slowly","Typing in all caps"],a:0},
-      {t:"Home row includes…",o:["A S D F","Q W E R","Z X C V","1 2 3 4"],a:0},
-
-      {t:"Which finger often presses the spacebar?",o:["Thumb","Index","Middle","Little"],a:0},
-      {t:"Tab key is often used to…",o:["Move to next field/indent","Turn off laptop","Print","Delete a file"],a:0},
-      {t:"Shift key is used to…",o:["Make capital letters / symbols","Open Start menu","Save","Close"],a:0},
-      {t:"Why should you keep eyes on the screen?",o:["To build touch-typing","To type slower","To make more errors","To waste time"],a:0},
-      {t:"Which is a punctuation mark?",o:[".","7","A","Ctrl"],a:0},
-      {t:"Which key makes a question mark on many keyboards?",o:["Shift + /","Ctrl + ?","Alt + ?","Windows + ?"],a:0},
-      {t:"Typing speed is usually measured in…",o:["WPM","KM","Volts","Pixels"],a:0},
-      {t:"If you make a mistake, you should…",o:["Use Backspace and fix it","Ignore it always","Close the laptop","Unplug the charger"],a:0},
-      {t:"A shortcut is…",o:["A faster way to do something","A kind of mouse","A printer","A battery"],a:0},
-      {t:"Which shortcut saves in many apps?",o:["Ctrl + S","Ctrl + P","Ctrl + C","Ctrl + V"],a:0},
-
-      {t:"Ctrl + C usually means…",o:["Copy","Cut","Close","Caps"],a:0},
-      {t:"Ctrl + V usually means…",o:["Paste","Print","Pause","Preview"],a:0},
-      {t:"Ctrl + X usually means…",o:["Cut","Copy","Undo","Redo"],a:0},
-      {t:"Ctrl + Z usually means…",o:["Undo","Zoom","Zip","Zero"],a:0},
-      {t:"Ctrl + A usually means…",o:["Select all","Save","Print","Search"],a:0},
-
-      {t:"Windows is a(n)…",o:["Operating system","Browser","Game","Keyboard"],a:0},
-      {t:"The Windows key usually opens…",o:["Start menu","Camera","Printer","Calculator only"],a:0},
-      {t:"The touchpad controls the…",o:["Pointer/cursor","Speaker","Battery","Keyboard lights"],a:0},
-      {t:"The power button is used to…",o:["Turn device on/off","Type letters","Print","Take photos"],a:0},
-      {t:"Which is safe laptop behaviour?",o:["Keep drinks away","Shake the laptop","Pull the charger to turn off","Hit the keyboard"],a:0},
-      {t:"A file is…",o:["A saved document or item","A type of mouse","A keyboard key","A battery"],a:0},
-      {t:"A folder is used to…",o:["Organise files","Play music","Charge the laptop","Change passwords"],a:0},
-      {t:"Which icon closes a window?",o:["X","□","–","?"],a:0},
-      {t:"Minimise means…",o:["Hide a window to the taskbar","Delete a file","Turn off Wi-Fi","Print"],a:0},
-      {t:"Maximise means…",o:["Make the window full screen","Make it smaller","Delete it","Send it to the printer"],a:0},
-
-      {t:"Wi-Fi is used to…",o:["Connect to the internet","Charge the battery","Make the screen bigger","Type faster"],a:0},
-      {t:"A browser is used to…",o:["Visit websites","Charge devices","Write with a pen","Build robots"],a:0},
-      {t:"Which is a browser?",o:["Google Chrome","Windows","Keyboard","Touchpad"],a:0},
-      {t:"A password should be…",o:["Kept private","Shared with friends","Written on the desk","Very short"],a:0},
-      {t:"What does Ctrl + P do in many apps?",o:["Print","Paste","Pause","Power off"],a:0},
-      {t:"The taskbar is usually at the…",o:["Bottom of the screen","Top only","Middle","It is invisible"],a:0},
-      {t:"An app is…",o:["A program you use","A cable","A battery","A folder"],a:0},
-      {t:"To shut down properly you should…",o:["Use Shut down option","Pull the plug","Close the lid always","Press random keys"],a:0},
-      {t:"If a laptop is overheating, you should…",o:["Tell the teacher","Cover it with a book","Put it in the sun","Pour water"],a:0},
-      {t:"A screenshot is a…",o:["Picture of the screen","Type of battery","Robot move","Printer file"],a:0},
-
-      {t:"Which key combo switches between open apps?",o:["Alt + Tab","Ctrl + S","Shift + Enter","Windows + P"],a:0},
-      {t:"Volume buttons control…",o:["Sound","Typing speed","Wi-Fi","Battery"],a:0},
-      {t:"Brightness controls…",o:["How light the screen is","How loud it is","How fast Wi-Fi is","How many files"],a:0},
-      {t:"A charger is used to…",o:["Recharge the battery","Print pages","Open websites","Type"],a:0},
-      {t:"Which is hardware?",o:["Keyboard","Windows","Website","Typing.com"],a:0},
-      {t:"Which is software?",o:["Windows","Mouse","Screen","USB cable"],a:0},
-      {t:"A USB port is used to…",o:["Plug in devices","Turn on Wi-Fi","Change wallpaper","Delete files"],a:0},
-      {t:"A mouse pointer is also called a…",o:["Cursor","Battery","Folder","Speaker"],a:0},
-      {t:"Double-click means…",o:["Click twice quickly","Hold the mouse","Press Enter","Turn off"],a:0},
-
-      {t:"Sphero is a…",o:["Programmable robot ball","Printer","Keyboard","Monitor"],a:0},
-      {t:"Sphero Edu is used to…",o:["Code Sphero","Cook food","Print","Draw"],a:0},
-      {t:"When Sphero moves, it uses…",o:["Motors","Ink","Paper","Keys"],a:0},
-      {t:"A sensor helps a robot…",o:["Detect things","Eat","Sleep","Write"],a:0},
-      {t:"A loop can make Sphero…",o:["Repeat actions","Lose battery instantly","Break","Freeze always"],a:0},
-      {t:"To make Sphero stop, you use…",o:["Stop block","Start menu","Caps Lock","Print"],a:0},
-      {t:"Which is a good robotics skill?",o:["Problem-solving","Guessing","Shouting","Rushing"],a:0},
-      {t:"If Sphero goes the wrong way, you should…",o:["Check the code","Throw it","Ignore it","Unplug Wi-Fi"],a:0},
-      {t:"Robots follow…",o:["Instructions","Feelings","Luck","Noise"],a:0},
-      {t:"What is a safe rule for Sphero use?",o:["Use gently and follow rules","Kick it","Use near water","Throw at friends"],a:0},
-
-      {t:"What does Bluetooth help devices do?",o:["Connect wirelessly nearby","Print photos","Charge batteries","Delete files"],a:0},
-      {t:"Which is the best way to keep your account safe?",o:["Use a strong password and keep it secret","Share password with friends","Use '1234'","Write it on the desk"],a:0},
-      {t:"Which is an example of 'output' from a robot?",o:["Robot LED lights up","You press a button","You type a key","You click a mouse"],a:0},
-      {t:"In coding, a 'bug' is usually…",o:["An error in the code","A type of keyboard","A USB cable","A website"],a:0},
-      {t:"Why do we comment code?",o:["To explain what the code does","To make code slower","To delete code","To hide the code"],a:0},
-      {t:"What is a 'programming language'?",o:["A way to write instructions for computers","A type of internet","A file folder","A battery type"],a:0},
-      {t:"What should you do before unplugging a laptop charger?",o:["Hold the plug and pull gently","Pull the cable hard","Kick the plug","Shake the laptop"],a:0},
-      {t:"What is the main job of RAM?",o:["Temporarily stores data while working","Plays sound","Prints documents","Connects Wi-Fi"],a:0},
-      {t:"In Scratch, a 'sprite' is…",o:["A character/object you control","A keyboard","A browser tab","A printer"],a:0},
-      {t:"A good way to improve in robotics is to…",o:["Build, test, and improve","Never test","Give up quickly","Copy without understanding"],a:0}
-    ];
-
-    // ---- Auto-fill to exactly 100 (NO CRASH) ----
-    const extraTemplates = [
-      ["Which device is used to type letters?", ["Keyboard","Monitor","Speaker","Mouse"], 0],
-      ["Which device is used to listen to sound?", ["Speakers","Printer","Touchpad","Router"], 0],
-      ["What should you do if a website looks unsafe?", ["Tell a teacher/adult","Enter your password","Click everything","Share it"], 0],
-      ["In coding, what does 'repeat 10 times' do?", ["Runs the same steps 10 times","Deletes your work","Turns off Wi-Fi","Prints 10 pages"], 0],
-      ["Which is a good way to name a file?", ["Use a clear name like 'Quiz_Grade7'","Use only symbols","Leave it blank","Use spaces only"], 0],
-      ["What does 'undo' do?", ["Reverses the last action","Makes text bold","Opens a browser","Turns off the PC"], 0],
-      ["Which key is used to make CAPITAL letters temporarily?", ["Shift","Caps Lock","Alt","Esc"], 0],
-      ["Which is an example of cyber safety?", ["Do not share your password","Share your login with friends","Click unknown links","Post personal info"], 0],
-      ["A robot 'sensor' is used to…", ["Detect/measure things","Print documents","Play music","Charge batteries"], 0],
-      ["If your code doesn't work, you should…", ["Check steps and test again","Give up","Delete everything","Ignore errors"], 0],
-      ["What is the internet?", ["A network of connected computers","A keyboard shortcut","A printer setting","A battery type"], 0],
-      ["What is a browser tab?", ["A page open in your browser","A keyboard key","A file folder","A charger plug"], 0],
-      ["Which is best before you submit a quiz?", ["Review flagged/unanswered questions","Close the laptop","Change wallpaper","Unplug Wi-Fi"], 0],
-      ["What does a strong password often include?", ["Letters, numbers, symbols","Only 'aaaa'","Only your name","Only 1234"], 0],
-      ["Which action is safest for cables?", ["Keep them tidy and don’t pull them","Swing them around","Pull from the cable","Step on them"], 0]
-    ];
-
-    let k = 0;
-    while(qs.length < 100){
-      const tpl = extraTemplates[k % extraTemplates.length];
-      qs.push({ t: tpl[0], o: tpl[1].slice(0,4), a: tpl[2] });
-      k++;
-    }
-    if(qs.length > 100) qs.length = 100;
-
-    // format safety (always 4 options and valid answer index)
-    for(const q of qs){
-      if(!Array.isArray(q.o) || q.o.length !== 4){
-        q.o = (q.o || []).slice(0,4);
-        while(q.o.length < 4) q.o.push("—");
-      }
-      if(!Number.isInteger(q.a) || q.a < 0 || q.a > 3) q.a = 0;
-      if(typeof q.t !== "string") q.t = String(q.t ?? "");
-    }
-    return qs;
-  }
-
   // ---------- Quiz config ----------
   const QZ = {
     courseTitle:"Course: Coding & Robotics",
@@ -438,17 +299,17 @@
     durationMinutes:35,
     autosaveSeconds:15,
     showReviewAfterSubmit:true,
-    questions: build100Questions()
+    questions: [] // ✅ set inside init()
   };
 
   // ---------- State ----------
   let S = {
     c:0,
     r:QZ.durationMinutes*60,
-    A:{},
-    F:{},
-    L:false,
-    started:false,
+    A:{},     // answers
+    F:{},     // flagged
+    L:false,  // locked/submitted
+    started:false, // timer started after selection
     seed:null,
     class_name:"",
     learner_id:"",
@@ -457,27 +318,37 @@
   };
 
   let T = null;
-  let supabase = null;
+  let client = null;
   let optionsShuffled = false;
 
+  // ---------- Helpers ----------
   const esc = (s)=>String(s).replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
   const rnd=(a,b)=>a+Math.random()*(b-a);
 
+  function showFatal(msg){
+    const c = $("qcard");
+    if(!c) return;
+    c.innerHTML = `
+      <div class="qhead">
+        <div>
+          <div class="qnum">Teacher note: Quiz failed to load</div>
+          <div class="qtext">${esc(msg)}</div>
+        </div>
+        <div class="qpts">Fix required</div>
+      </div>
+      <div class="qbody">
+        <div class="errorBox">Open DevTools → Console to see details.\n\n${esc(msg)}</div>
+      </div>
+    `;
+  }
+
   function hardCheck100(){
     if(!Array.isArray(QZ.questions) || QZ.questions.length !== 100){
-      // no throw: just fix quietly
-      console.warn("Question bank was not 100; forcing to 100. Current:", QZ.questions?.length);
-      while(QZ.questions.length < 100){
-        QZ.questions.push({t:"Extra question",o:["A","B","C","D"],a:0});
-      }
-      if(QZ.questions.length > 100) QZ.questions.length = 100;
+      throw new Error("Questions must be exactly 100. Current: "+(QZ.questions?.length ?? "null"));
     }
     for(const q of QZ.questions){
       if(!q || typeof q.t!=="string" || !Array.isArray(q.o) || q.o.length!==4 || !Number.isInteger(q.a) || q.a<0 || q.a>3){
-        q.t = String(q?.t ?? "Question");
-        q.o = Array.isArray(q?.o) ? q.o.slice(0,4) : ["A","B","C","D"];
-        while(q.o.length < 4) q.o.push("—");
-        q.a = (Number.isInteger(q?.a) && q.a>=0 && q.a<=3) ? q.a : 0;
+        throw new Error("Invalid question format detected.");
       }
     }
   }
@@ -525,6 +396,7 @@
     return !!S.class_name && !!S.learner_full_name && !S.L;
   }
 
+  // ---------- UI render ----------
   function nav(){
     const h=$("navGrid");
     h.innerHTML="";
@@ -545,8 +417,13 @@
 
   function render(){
     const q=QZ.questions[S.c];
+    if(!q){
+      showFatal("Question data missing at index "+S.c+".");
+      return;
+    }
     const sel=S.A[S.c];
     const fl=!!S.F[S.c];
+
     const lockedBySetup = !canAnswer();
 
     $("qcard").innerHTML = `
@@ -560,14 +437,14 @@
       <div class="qbody">
         ${q.o.map((o,idx)=>{
           const id=\`q_\${S.c}_opt_\${idx}\`;
-          return `
-            <label class="opt" for="${id}">
-              <input ${sel===idx ? "checked":""}
-                     ${lockedBySetup ? "disabled":""}
-                     type="radio" id="${id}" name="q_${S.c}" value="${idx}"/>
-              <span>${esc(o)}</span>
+          return \`
+            <label class="opt" for="\${id}">
+              <input \${sel===idx ? "checked":""}
+                     \${lockedBySetup ? "disabled":""}
+                     type="radio" id="\${id}" name="q_\${S.c}" value="\${idx}"/>
+              <span>\${esc(o)}</span>
             </label>
-          `;
+          \`;
         }).join("")}
 
         ${lockedBySetup ? `
@@ -606,6 +483,7 @@
     return n;
   }
 
+  // ---------- Timer ----------
   function stopTimer(){ if(T){ clearInterval(T); T=null; } }
 
   function timerUI(){
@@ -630,6 +508,7 @@
     }, 1000);
   }
 
+  // ---------- Score + submit ----------
   function score(){
     let e=0;
     const br=[];
@@ -784,6 +663,7 @@
 
     S.L=true;
     stopTimer();
+
     navUI();
     render();
 
@@ -829,10 +709,12 @@
 
     $("result").innerHTML=html;
     $("result").style.display="block";
+
     save({submitted:1,pct,auto,t:Date.now()});
     $("result").scrollIntoView({behavior:"smooth",block:"start"});
   }
 
+  // ---------- Save / Load ----------
   function save(extra={}){
     const payload = {
       s:{
@@ -899,6 +781,7 @@
     save({reset:1,t:Date.now()});
   }
 
+  // ---------- Events ----------
   function bind(){
     document.addEventListener("change",(e)=>{
       if(S.L) return;
@@ -992,13 +875,18 @@
     });
   }
 
+  // ---------- Supabase (classes + learners) ----------
   function initSupabase(){
     try{
-      if(!window.supabase) throw new Error("Supabase JS not loaded");
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      if(!window.supabase || typeof window.supabase.createClient !== "function"){
+        console.warn("Supabase JS not loaded (window.supabase missing).");
+        client = null;
+        return;
+      }
+      client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }catch(e){
       console.warn("Supabase init failed:", e);
-      supabase = null;
+      client = null;
     }
   }
 
@@ -1006,12 +894,12 @@
     const cs = $("classSelect");
     cs.innerHTML = `<option value="">Select class...</option>`;
 
-    if(!supabase){
+    if(!client){
       cs.innerHTML += `<option value="">(Supabase not connected)</option>`;
       return;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from("learners")
       .select("class_name,grade")
       .not("class_name","is",null)
@@ -1063,13 +951,13 @@
     const ls = $("learnerSelect");
     ls.innerHTML = `<option value="">Select learner...</option>`;
 
-    if(!supabase){
+    if(!client){
       ls.innerHTML = `<option value="">(Supabase not connected)</option>`;
       ls.disabled = true;
       return;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from("learners")
       .select("id,full_name,first_name,surname,grade,class_name")
       .eq("class_name", className)
@@ -1093,6 +981,7 @@
     }
   }
 
+  // ---------- Init ----------
   function init(){
     try{
       $("courseTitle").textContent = QZ.courseTitle;
@@ -1100,17 +989,15 @@
       $("mainTitle").textContent = QZ.attemptTitle;
       $("mainSub").textContent = QZ.instructions;
 
+      // ✅ Build questions INSIDE init (prevents whole script from dying early)
+      QZ.questions = build100Questions();
       hardCheck100();
 
       nav();
-      render();
       bind();
-      navUI();
-      timerUI();
-
-      load();
-      navUI();
+      load();           // load before first render so current question is correct
       render();
+      navUI();
       timerUI();
 
       initSupabase();
@@ -1121,24 +1008,141 @@
       save({boot:1,t:Date.now()});
     }catch(e){
       console.error(e);
-      const c=$("qcard");
-      c.innerHTML = `
-        <div class="qhead">
-          <div>
-            <div class="qnum">Teacher note: Quiz failed to load</div>
-            <div class="qtext">${esc(e.message || "Unknown error")}</div>
-          </div>
-          <div class="qpts">Fix required</div>
-        </div>
-        <div class="qbody">
-          <p class="small" style="margin:0">Open DevTools → Console to see the error.</p>
-        </div>
-      `;
+      showFatal(e.message || "Unknown error");
     }
   }
 
-  window.addEventListener("DOMContentLoaded", init);
+  // ✅ Run init even if DOMContentLoaded already fired
+  function boot(){
+    if(document.readyState === "loading"){
+      window.addEventListener("DOMContentLoaded", init);
+    }else{
+      init();
+    }
+  }
+  boot();
 
+  // ---------- Question bank (100 total) ----------
+  function build100Questions(){
+    const qs = [
+      {t:"What is an algorithm?",o:["A computer","A step-by-step set of instructions","A robot","A mistake"],a:1},
+      {t:"A loop is used to…",o:["Repeat instructions","Delete files","Turn off a computer","Open a website"],a:0},
+      {t:"Debugging means…",o:["Finding and fixing mistakes","Making the screen brighter","Charging a laptop","Printing a page"],a:0},
+      {t:"Which is a block-coding tool for learners?",o:["Scratch","PowerPoint","Calculator","Camera"],a:0},
+      {t:"Which comes first when solving a problem?",o:["Plan","Copy","Guess","Skip"],a:0},
+      {t:"What is a program?",o:["A set of instructions for a computer","A type of keyboard","A battery","A monitor"],a:0},
+      {t:"An IF statement is used to…",o:["Make a choice/decision","Print a document","Charge a device","Open the Start menu"],a:0},
+      {t:"Which is an example of a condition?",o:["If score is > 10","Draw a circle","Press spacebar","Open Chrome"],a:0},
+      {t:"Which is an example of output?",o:["Sound from speakers","Mouse click","Keyboard typing","Touchpad tap"],a:0},
+      {t:"Which is an example of input?",o:["Printer page","Monitor picture","Keyboard key press","Speaker sound"],a:2},
+
+      {t:"What does CPU stand for?",o:["Central Processing Unit","Computer Power Unit","Control Program User","Central Print Unit"],a:0},
+      {t:"A bug in code is a…",o:["Mistake/error","Type of mouse","Good idea","Battery"],a:0},
+      {t:"Why do we test programs?",o:["To find problems","To make them slower","To delete them","To waste time"],a:0},
+      {t:"Which is a good coding habit?",o:["Test often","Never save","Skip instructions","Rush"],a:0},
+      {t:"What does SAVE do?",o:["Stores your work","Deletes your work","Turns off Wi-Fi","Changes the wallpaper"],a:0},
+      {t:"Which is a sequence?",o:["Steps in order","A random guess","A picture","A battery"],a:0},
+      {t:"Which word means 'repeat'?",o:["Loop","Stop","Close","Exit"],a:0},
+      {t:"What is decomposition?",o:["Breaking a big problem into smaller parts","Making a robot faster","Cleaning a laptop","Typing without looking"],a:0},
+      {t:"Pattern recognition means…",o:["Finding things that repeat","Deleting patterns","Printing patterns","Charging patterns"],a:0},
+      {t:"Abstraction means…",o:["Focusing on important details","Adding extra details","Making it confusing","Turning off the screen"],a:0},
+
+      {t:"Which is an example of an instruction?",o:["Move forward","Blue","Laptop","Triangle"],a:0},
+      {t:"A flowchart is used to…",o:["Show steps of a process","Play music","Charge devices","Take photos"],a:0},
+      {t:"In a flowchart, a diamond usually means…",o:["Decision","Start","End","Data"],a:0},
+      {t:"In a flowchart, a rectangle usually means…",o:["Process/Action","Decision","Start","Arrow"],a:0},
+      {t:"A variable is like a…",o:["Box that stores information","Type of printer","Mouse pointer","Battery"],a:0},
+
+      {t:"typing.com helps you practise…",o:["Typing","Drawing","Singing","Cooking"],a:0},
+      {t:"Which key starts a new line?",o:["Enter","Shift","Ctrl","Alt"],a:0},
+      {t:"Which key makes a space?",o:["Spacebar","Tab","Caps Lock","Esc"],a:0},
+      {t:"Which key deletes to the LEFT?",o:["Backspace","Delete","Enter","Windows"],a:0},
+      {t:"Which key deletes to the RIGHT?",o:["Delete","Backspace","Shift","Tab"],a:0},
+      {t:"Caps Lock is used to…",o:["Type in capitals","Open a file","Print","Save"],a:0},
+      {t:"Good posture means…",o:["Sit upright","Lie down","Look away","Use one finger"],a:0},
+      {t:"Accuracy means…",o:["Few mistakes","Very loud typing","Only speed","No punctuation"],a:0},
+      {t:"Touch typing means…",o:["Typing without looking at keys","Typing with a touchscreen","Typing slowly","Typing in all caps"],a:0},
+      {t:"Home row includes…",o:["A S D F","Q W E R","Z X C V","1 2 3 4"],a:0},
+
+      {t:"Which finger often presses the spacebar?",o:["Thumb","Index","Middle","Little"],a:0},
+      {t:"Tab key is often used to…",o:["Move to next field/indent","Turn off laptop","Print","Delete a file"],a:0},
+      {t:"Shift key is used to…",o:["Make capital letters / symbols","Open Start menu","Save","Close"],a:0},
+      {t:"Why should you keep eyes on the screen?",o:["To build touch-typing","To type slower","To make more errors","To waste time"],a:0},
+      {t:"Which is a punctuation mark?",o:[".","7","A","Ctrl"],a:0},
+      {t:"Which key makes a question mark on many keyboards?",o:["Shift + /","Ctrl + ?","Alt + ?","Windows + ?"],a:0},
+      {t:"Typing speed is usually measured in…",o:["WPM","KM","Volts","Pixels"],a:0},
+      {t:"If you make a mistake, you should…",o:["Use Backspace and fix it","Ignore it always","Close the laptop","Unplug the charger"],a:0},
+      {t:"A shortcut is…",o:["A faster way to do something","A kind of mouse","A printer","A battery"],a:0},
+      {t:"Which shortcut saves in many apps?",o:["Ctrl + S","Ctrl + P","Ctrl + C","Ctrl + V"],a:0},
+
+      {t:"Ctrl + C usually means…",o:["Copy","Cut","Close","Caps"],a:0},
+      {t:"Ctrl + V usually means…",o:["Paste","Print","Pause","Preview"],a:0},
+      {t:"Ctrl + X usually means…",o:["Cut","Copy","Undo","Redo"],a:0},
+      {t:"Ctrl + Z usually means…",o:["Undo","Zoom","Zip","Zero"],a:0},
+      {t:"Ctrl + A usually means…",o:["Select all","Save","Print","Search"],a:0},
+
+      {t:"Windows is a(n)…",o:["Operating system","Browser","Game","Keyboard"],a:0},
+      {t:"The Windows key usually opens…",o:["Start menu","Camera","Printer","Calculator only"],a:0},
+      {t:"The touchpad controls the…",o:["Pointer/cursor","Speaker","Battery","Keyboard lights"],a:0},
+      {t:"The power button is used to…",o:["Turn device on/off","Type letters","Print","Take photos"],a:0},
+      {t:"Which is safe laptop behaviour?",o:["Keep drinks away","Shake the laptop","Pull the charger to turn off","Hit the keyboard"],a:0},
+      {t:"A file is…",o:["A saved document or item","A type of mouse","A keyboard key","A battery"],a:0},
+      {t:"A folder is used to…",o:["Organise files","Play music","Charge the laptop","Change passwords"],a:0},
+      {t:"Which icon closes a window?",o:["X","□","–","?"],a:0},
+      {t:"Minimise means…",o:["Hide a window to the taskbar","Delete a file","Turn off Wi-Fi","Print"],a:0},
+      {t:"Maximise means…",o:["Make the window full screen","Make it smaller","Delete it","Send it to the printer"],a:0},
+
+      {t:"Wi-Fi is used to…",o:["Connect to the internet","Charge the battery","Make the screen bigger","Type faster"],a:0},
+      {t:"A browser is used to…",o:["Visit websites","Charge devices","Write with a pen","Build robots"],a:0},
+      {t:"Which is a browser?",o:["Google Chrome","Windows","Keyboard","Touchpad"],a:0},
+      {t:"A password should be…",o:["Kept private","Shared with friends","Written on the desk","Very short"],a:0},
+      {t:"What does Ctrl + P do in many apps?",o:["Print","Paste","Pause","Power off"],a:0},
+      {t:"The taskbar is usually at the…",o:["Bottom of the screen","Top only","Middle","It is invisible"],a:0},
+      {t:"An app is…",o:["A program you use","A cable","A battery","A folder"],a:0},
+      {t:"To shut down properly you should…",o:["Use Shut down option","Pull the plug","Close the lid always","Press random keys"],a:0},
+      {t:"If a laptop is overheating, you should…",o:["Tell the teacher","Cover it with a book","Put it in the sun","Pour water"],a:0},
+      {t:"A screenshot is a…",o:["Picture of the screen","Type of battery","Robot move","Printer file"],a:0},
+
+      {t:"Which key combo switches between open apps?",o:["Alt + Tab","Ctrl + S","Shift + Enter","Windows + P"],a:0},
+      {t:"Volume buttons control…",o:["Sound","Typing speed","Wi-Fi","Battery"],a:0},
+      {t:"Brightness controls…",o:["How light the screen is","How loud it is","How fast Wi-Fi is","How many files"],a:0},
+      {t:"A charger is used to…",o:["Recharge the battery","Print pages","Open websites","Type"],a:0},
+      {t:"Which is hardware?",o:["Keyboard","Windows","Website","Typing.com"],a:0},
+      {t:"Which is software?",o:["Windows","Mouse","Screen","USB cable"],a:0},
+      {t:"A USB port is used to…",o:["Plug in devices","Turn on Wi-Fi","Change wallpaper","Delete files"],a:0},
+      {t:"A mouse pointer is also called a…",o:["Cursor","Battery","Folder","Speaker"],a:0},
+      {t:"Double-click means…",o:["Click twice quickly","Hold the mouse","Press Enter","Turn off"],a:0},
+
+      {t:"Sphero is a…",o:["Programmable robot ball","Printer","Keyboard","Monitor"],a:0},
+      {t:"Sphero Edu is used to…",o:["Code Sphero","Cook food","Print","Draw"],a:0},
+      {t:"When Sphero moves, it uses…",o:["Motors","Ink","Paper","Keys"],a:0},
+      {t:"A sensor helps a robot…",o:["Detect things","Eat","Sleep","Write"],a:0},
+      {t:"A loop can make Sphero…",o:["Repeat actions","Lose battery instantly","Break","Freeze always"],a:0},
+      {t:"To make Sphero stop, you use…",o:["Stop block","Start menu","Caps Lock","Print"],a:0},
+      {t:"Which is a good robotics skill?",o:["Problem-solving","Guessing","Shouting","Rushing"],a:0},
+      {t:"If Sphero goes the wrong way, you should…",o:["Check the code","Throw it","Ignore it","Unplug Wi-Fi"],a:0},
+      {t:"Robots follow…",o:["Instructions","Feelings","Luck","Noise"],a:0},
+      {t:"What is a safe rule for Sphero use?",o:["Use gently and follow rules","Kick it","Use near water","Throw at friends"],a:0},
+
+      {t:"What does Bluetooth help devices do?",o:["Connect wirelessly nearby","Print photos","Charge batteries","Delete files"],a:0},
+      {t:"Which is the best way to keep your account safe?",o:["Use a strong password and keep it secret","Share password with friends","Use '1234'","Write it on the desk"],a:0},
+      {t:"Which is an example of 'output' from a robot?",o:["Robot LED lights up","You press a button","You type a key","You click a mouse"],a:0},
+      {t:"In coding, a 'bug' is usually…",o:["An error in the code","A type of keyboard","A USB cable","A website"],a:0},
+      {t:"Why do we comment code?",o:["To explain what the code does","To make code slower","To delete code","To hide the code"],a:0},
+      {t:"What is a 'programming language'?",o:["A way to write instructions for computers","A type of internet","A file folder","A battery type"],a:0},
+      {t:"What should you do before unplugging a laptop charger?",o:["Hold the plug and pull gently","Pull the cable hard","Kick the plug","Shake the laptop"],a:0},
+      {t:"What is the main job of RAM?",o:["Temporarily stores data while working","Plays sound","Prints documents","Connects Wi-Fi"],a:0},
+      {t:"In Scratch, a 'sprite' is…",o:["A character/object you control","A keyboard","A browser tab","A printer"],a:0},
+      {t:"A good way to improve in robotics is to…",o:["Build, test, and improve","Never test","Give up quickly","Copy without understanding"],a:0}
+    ];
+
+    if(qs.length !== 100){
+      throw new Error("Question builder produced "+qs.length+" questions (must be 100).");
+    }
+    return qs;
+  }
+
+  // debugging helpers
   window.__qz_state=()=>({locked:S.L,answered:Object.keys(S.A).length,remaining:S.r,started:S.started,class:S.class_name,learner:S.learner_full_name});
   window.__qz_submit=(auto)=>submit(!!auto);
   window.__qz_reset=()=>resetAll();
