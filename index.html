@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Disa • Coding & Robotics MCQ (100 Questions)</title>
+  <title>Disa • Coding & Robotics MCQ (Grade 5 • 100 Questions)</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -23,6 +23,7 @@
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+
     .topbar{
       background:linear-gradient(90deg,var(--brand),#7f0b18);
       color:#fff; padding:14px 18px; display:flex; align-items:center; gap:16px;
@@ -36,27 +37,30 @@
     .topmeta{flex:1}
     .topmeta .course{font-size:28px;font-weight:800;line-height:1.05}
     .topmeta .quiz{opacity:.95;margin-top:4px}
+
     .timerBox{
       display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:180px
     }
     .pill{
       background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.25);
-      padding:10px 14px;border-radius:999px;font-weight:700;
+      padding:10px 14px;border-radius:999px;font-weight:800;
     }
     .copyright{font-size:12px;opacity:.9}
     .divider{height:3px;background:#fff;opacity:.08}
 
     .wrap{max-width:1400px;margin:16px auto;padding:0 14px;display:grid;grid-template-columns:360px 1fr;gap:14px}
     .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+
     .sidebar{padding:14px}
-    .h1{font-size:20px;font-weight:800;margin:0 0 6px}
+    .h1{font-size:20px;font-weight:900;margin:0 0 6px}
     .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
 
-    label{display:block;color:var(--muted);font-weight:700;font-size:13px;margin:12px 0 6px}
+    label{display:block;color:var(--muted);font-weight:800;font-size:13px;margin:12px 0 6px}
     select,input{
       width:100%;padding:12px 12px;border-radius:12px;border:1px solid var(--border);outline:none;
       font-size:14px;background:#fff;
     }
+
     .smallrow{display:flex;gap:10px}
     .smallrow > div{flex:1}
 
@@ -65,6 +69,7 @@
     .d0{background:#e5e7eb}
     .d1{background:var(--ok);border-color:rgba(0,0,0,.08)}
     .d2{background:var(--flag);border-color:rgba(0,0,0,.08)}
+
     .navgrid{
       border-top:1px solid var(--border);
       padding-top:12px;margin-top:12px;
@@ -73,7 +78,7 @@
     }
     .qbtn{
       border:1px solid var(--border);
-      background:#fff;border-radius:10px;padding:8px 0;font-size:12px;font-weight:800;
+      background:#fff;border-radius:10px;padding:8px 0;font-size:12px;font-weight:900;
       cursor:pointer;
     }
     .qbtn.answered{background:rgba(27,127,59,.10);border-color:rgba(27,127,59,.25)}
@@ -82,13 +87,15 @@
 
     .sideActions{display:flex;gap:10px;margin-top:12px}
     .btn{
-      padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;font-weight:800;cursor:pointer;
+      padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#fff;font-weight:900;cursor:pointer;
     }
     .btn.red{border-color:rgba(177,18,38,.35);color:var(--brand)}
+
     .main{padding:14px}
     .titleRow{padding:14px;border-bottom:1px solid var(--border)}
     .titleRow h2{margin:0;font-size:22px}
     .titleRow p{margin:6px 0 0;color:var(--muted)}
+
     .controls{
       display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px;border-bottom:1px solid var(--border)
     }
@@ -96,39 +103,53 @@
     .btn.big{padding:10px 14px}
     .btn.brand{background:var(--brand);color:#fff;border-color:transparent}
     .btn.brand:hover{background:var(--brand2)}
+
     .content{padding:14px;min-height:420px}
+
     .qhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
     .qno{font-weight:900}
-    .qtext{font-size:18px;font-weight:800}
+    .qtext{font-size:18px;font-weight:900}
     .metaLine{color:var(--muted);font-size:12px;margin-top:4px}
+
     .choices{display:grid;gap:10px;margin-top:12px}
     .choice{
       border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;
     }
     .choice input{width:auto;margin-top:2px}
     .choice.selected{border-color:rgba(177,18,38,.35);background:rgba(177,18,38,.06)}
+
     .notice{
       padding:10px 12px;border-radius:12px;border:1px dashed rgba(177,18,38,.30);
-      background:rgba(177,18,38,.06); color:var(--brand); font-weight:800; font-size:13px;
+      background:rgba(177,18,38,.06); color:var(--brand); font-weight:900; font-size:13px;
       margin:10px 0 0;
     }
+
     .resultBox{
       margin-top:14px;padding:12px;border-radius:12px;border:1px solid var(--border);background:#fff;
     }
     .resultBox .score{font-size:22px;font-weight:900}
     .resultBox .small{color:var(--muted)}
+
     .foot{padding:10px 14px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+
+    /* iPad / smaller screens */
+    @media (max-width: 980px){
+      .wrap{grid-template-columns:1fr}
+      .timerBox{min-width:auto}
+      .topmeta .course{font-size:22px}
+      .logo{width:72px;height:72px}
+      .navgrid{max-height:220px}
+    }
   </style>
 </head>
 
 <body>
   <div class="topbar">
     <div class="logo">
-      <!-- Replace with your local file path if needed -->
       <img src="disa-logo.png" alt="Disa Primary School Logo" onerror="this.style.display='none'">
     </div>
     <div class="topmeta">
-      <div class="course">Course: Coding & Robotics</div>
+      <div class="course">Course: Coding & Robotics (Grade 5)</div>
       <div class="quiz">Quiz: (100 Questions)</div>
     </div>
     <div class="timerBox">
@@ -161,7 +182,7 @@
         </div>
         <div>
           <label>Class</label>
-          <input id="classBox" placeholder="e.g., 7B" />
+          <input id="classBox" placeholder="e.g., 5B" />
         </div>
       </div>
 
@@ -185,7 +206,7 @@
     <!-- MAIN -->
     <div class="card">
       <div class="titleRow">
-        <h2>Attempt: Coding & Robotics MCQ (100 Questions)</h2>
+        <h2>Attempt: Coding & Robotics MCQ (Grade 5 • 100 Questions)</h2>
         <p>Rules: Silent work. No talking. Auto-submit when time runs out.</p>
       </div>
 
@@ -212,37 +233,150 @@ const SUPABASE_ANON_KEY = "sb_publishable_3ud-FlpJ9AZZDIzVkZ1EoA_B7c-Vs7B";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* =========================
-   QUIZ DATA (100 generated)
-   Keep it short but stable.
+   QUIZ DATA (Grade 5 • 100 unique)
    ========================= */
 function buildQuestions(){
-  const templates = [
-    {q:"What does a robot use to detect distance?", a:["Speaker","Ultrasonic sensor","Keyboard","Printer"], c:1},
-    {q:"In Scratch, a loop repeats code using which block type?", a:["Motion","Events","Control","Looks"], c:2},
-    {q:"What does 'CPU' stand for?", a:["Central Processing Unit","Computer Power Unit","Core Print Utility","Central Program User"], c:0},
-    {q:"Which is an INPUT device?", a:["Monitor","Speaker","Mouse","Projector"], c:2},
-    {q:"Typing.com helps you improve:", a:["Drawing","Typing speed","Cooking","Swimming"], c:1},
-    {q:"A 'program' is:", a:["A set of instructions","A type of battery","A robot wheel","A screen"], c:0},
-    {q:"Which is a safe password idea?", a:["123456","password","Long phrase + symbols","Your name"], c:2},
-    {q:"What is a 'sensor'?", a:["A robot's brain","A device that detects/reads","A wheel","A charger"], c:1},
-    {q:"Which is a common output?", a:["Microphone","Monitor","Mouse","Touchpad"], c:1},
-    {q:"What does Wi-Fi allow?", a:["Printing only","Wireless internet connection","More battery","Bigger screen"], c:1},
+  const Q = [
+    // 1–20: Basic computer & devices
+    {text:"What is hardware?", choices:["Programs and apps","Physical parts of a computer","Internet connection","A password"], correct:1},
+    {text:"Which is an output device?", choices:["Mouse","Keyboard","Monitor","Microphone"], correct:2},
+    {text:"Which is an input device?", choices:["Speaker","Printer","Mouse","Projector"], correct:2},
+    {text:"What does a computer need to work?", choices:["Power (electricity)","Only headphones","Only paper","Only Wi-Fi"], correct:0},
+    {text:"Which part stores files even when the computer is off?", choices:["RAM","Hard drive / SSD","Monitor","Fan"], correct:1},
+    {text:"What is a browser used for?", choices:["To type faster","To view websites","To charge a device","To print only"], correct:1},
+    {text:"Which one is a tablet?", choices:["iPad","Router","Keyboard","Mouse"], correct:0},
+    {text:"What is a file?", choices:["A saved piece of work (document/photo)","A robot wheel","A Wi-Fi signal","A password rule"], correct:0},
+    {text:"Which icon usually means ‘settings’?", choices:["Envelope","Gear/cog","Play button","Camera"], correct:1},
+    {text:"What does ‘volume’ control?", choices:["Screen brightness","Sound level","Internet speed","Battery size"], correct:1},
+
+    {text:"Which is used to print on paper?", choices:["Printer","Scanner","Speaker","Mouse"], correct:0},
+    {text:"What is ‘storage’ mainly for?", choices:["To make the screen bigger","To save files and apps","To play music louder","To connect to Bluetooth"], correct:1},
+    {text:"What does ‘battery percentage’ show?", choices:["How fast Wi-Fi is","How much charge is left","How many apps you have","How bright the screen is"], correct:1},
+    {text:"Which is NOT hardware?", choices:["Keyboard","Monitor","Scratch","Mouse"], correct:2},
+    {text:"What is an app?", choices:["A program you can use on a device","A type of cable","A computer part","A password"], correct:0},
+    {text:"Which is safest for carrying an iPad?", choices:["One hand while running","Two hands or a protective cover","Under your shirt","By the charging cable"], correct:1},
+    {text:"What does ‘update’ usually mean?", choices:["Make it older","Fix and improve software","Delete everything","Turn off Wi-Fi"], correct:1},
+    {text:"Which is used to take a photo?", choices:["Camera","Printer","Keyboard","Router"], correct:0},
+    {text:"What does a touchscreen do?", choices:["Only plays music","Lets you control by touching the screen","Makes Wi-Fi faster","Prints documents"], correct:1},
+    {text:"Which key usually deletes text?", choices:["Enter","Backspace","Shift","Ctrl"], correct:1},
+
+    // 21–40: Internet safety & email basics
+    {text:"Which password is strongest?", choices:["123456","password","MyName2024","BlueTiger!9River"], correct:3},
+    {text:"Why should you NOT share your password?", choices:["So your screen is brighter","Someone could access your account","It makes typing slower","It stops Wi-Fi"], correct:1},
+    {text:"What is personal information?", choices:["Your favourite colour","Your home address and phone number","A cartoon character","A game level"], correct:1},
+    {text:"If a website asks for your password, you should:", choices:["Give it immediately","Ask a trusted adult/teacher first","Post it in a group chat","Write it on your iPad cover"], correct:1},
+    {text:"What does ‘log in’ mean?", choices:["Turn volume up","Enter your account details","Delete an app","Take a photo"], correct:1},
+    {text:"What does ‘log out’ help with?", choices:["Keeps your account safe","Makes Wi-Fi faster","Charges the iPad","Prints your work"], correct:0},
+    {text:"What is phishing?", choices:["Catching fish","Tricking people to share passwords/info","A type of keyboard","A robot part"], correct:1},
+    {text:"A safe rule online is:", choices:["Click all pop-ups","Never tell an adult anything","Be kind and don’t share private info","Use the same password everywhere"], correct:2},
+    {text:"If you see something scary online, you should:", choices:["Keep it secret","Tell a trusted adult/teacher","Send it to friends","Delete the browser"], correct:1},
+    {text:"What is an email ‘subject’?", choices:["The greeting","The topic line of the email","The signature","The attachment"], correct:1},
+
+    {text:"What is an attachment?", choices:["A topic line","A file added to an email","A password","A website"], correct:1},
+    {text:"What does ‘CC’ mean in email?", choices:["Copy someone in so they can see it","Cancel message","Change colour","Close chat"], correct:0},
+    {text:"What does ‘BCC’ do?", choices:["Shows everyone’s addresses","Hides recipients from each other","Deletes the email","Blocks Wi-Fi"], correct:1},
+    {text:"A polite email greeting is:", choices:["Yo","Hey you","Dear Sir/Madam / Hello","Give me this now"], correct:2},
+    {text:"A good email ending is:", choices:["Bye loser","Thanks / Kind regards","Whatever","No ending needed"], correct:1},
+    {text:"Why should we check spelling before sending?", choices:["It wastes time","It makes the email clear and professional","It stops the email","It breaks the keyboard"], correct:1},
+    {text:"What should you do before clicking a link?", choices:["Click fast","Check if it’s safe and from someone you trust","Share it everywhere","Turn off the iPad"], correct:1},
+    {text:"What does ‘Wi-Fi’ help you do?", choices:["Connect to the internet without a cable","Print without paper","Charge the iPad","Increase storage"], correct:0},
+    {text:"Which is safe to share online?", choices:["Your password","Your home address","A project about robots","Your phone number"], correct:2},
+    {text:"If someone is unkind online, you should:", choices:["Be unkind back","Block/report and tell an adult/teacher","Give them your password","Meet them after school"], correct:1},
+
+    // 41–70: Coding concepts + Scratch
+    {text:"A ‘program’ is:", choices:["A robot wheel","A set of instructions","A password","A charger"], correct:1},
+    {text:"What is an algorithm?", choices:["A dance move","Steps to solve a problem","A type of screen","A speaker"], correct:1},
+    {text:"What does a loop do?", choices:["Stops code","Repeats instructions","Deletes a file","Turns off Wi-Fi"], correct:1},
+    {text:"In Scratch, which blocks are used for repeating?", choices:["Looks","Events","Control","Sound"], correct:2},
+    {text:"In Scratch, which block starts a project?", choices:["When green flag clicked","Say hello","Move 10 steps","Wait 1 second"], correct:0},
+    {text:"A bug in a program is:", choices:["A small insect","A mistake/error in code","A battery","A mouse"], correct:1},
+    {text:"Debugging means:", choices:["Making code worse","Finding and fixing mistakes","Turning off the device","Deleting your work"], correct:1},
+    {text:"A variable is used to:", choices:["Play music","Store information (like a score)","Charge a robot","Print a page"], correct:1},
+    {text:"Which is an example of a variable?", choices:["Score","Keyboard","Monitor","Speaker"], correct:0},
+    {text:"In Scratch, sprites are:", choices:["Internet pages","Characters/objects you control","Passwords","Folders"], correct:1},
+
+    {text:"Which block category moves a sprite?", choices:["Motion","Sound","Looks","Control"], correct:0},
+    {text:"Which block category changes how a sprite looks?", choices:["Looks","Motion","Events","Control"], correct:0},
+    {text:"Which block category detects touching or mouse?", choices:["Sensing","Sound","Motion","Pen"], correct:0},
+    {text:"When you ‘save’ your work, you:", choices:["Delete it","Keep it for later","Make it a photo","Turn it off"], correct:1},
+    {text:"What does ‘run a program’ mean?", choices:["Open and execute it","Print it","Charge it","Hide it"], correct:0},
+    {text:"An ‘event’ in Scratch is:", choices:["A mistake","Something that triggers code to start","A speaker","A charger"], correct:1},
+    {text:"If code runs in the wrong order, you should:", choices:["Ignore it","Check the sequence/steps","Break the iPad","Change the wallpaper"], correct:1},
+    {text:"A flowchart is:", choices:["A map of steps in a process","A music chart","A robot battery","A keyboard setting"], correct:0},
+    {text:"The correct order for solving a coding problem is:", choices:["Guess, submit, forget","Plan, build, test, improve","Sleep, delete, restart","Copy, paste, done"], correct:1},
+    {text:"If a sprite keeps moving forever, you may have used:", choices:["A loop","A delete block","A stop button","A volume key"], correct:0},
+
+    // 71–100: Robotics & sensors + digital citizenship
+    {text:"A robot is:", choices:["Only a computer game","A machine that can follow instructions","A notebook","A pencil"], correct:1},
+    {text:"A sensor helps a robot to:", choices:["Eat food","Sense/measure things around it","Sleep","Draw pictures"], correct:1},
+    {text:"Which sensor detects light?", choices:["Light sensor","Speaker","Keyboard","Printer"], correct:0},
+    {text:"Which sensor can help avoid bumping into walls?", choices:["Distance sensor","Paintbrush","Microphone","Paper"], correct:0},
+    {text:"A motor is used to:", choices:["Store passwords","Make movement happen","Send emails","Increase Wi-Fi"], correct:1},
+    {text:"A battery in a robot is for:", choices:["Power","Internet","Sound only","Printing"], correct:0},
+    {text:"What does ‘input’ mean for a robot?", choices:["Information going in (sensor reading)","The robot’s colour","A printer","A trophy"], correct:0},
+    {text:"What does ‘output’ mean for a robot?", choices:["What the robot does (move/light/sound)","A password","A website","A file name"], correct:0},
+    {text:"If a robot’s wheel is loose, that is a:", choices:["Software problem","Hardware problem","Wi-Fi problem","Email problem"], correct:1},
+    {text:"If Scratch code is wrong, that is a:", choices:["Hardware problem","Software problem","Battery problem","Mouse problem"], correct:1},
+
+    {text:"Being a good digital citizen means:", choices:["Being rude online","Being safe and respectful online","Sharing passwords","Posting private info"], correct:1},
+    {text:"Which is the best action before posting a photo online?", choices:["Post immediately","Ask permission and think first","Tag strangers","Share your password too"], correct:1},
+    {text:"Cyberbullying is:", choices:["Helping someone","Being mean online repeatedly","Typing fast","Fixing bugs"], correct:1},
+    {text:"If you make a mistake in an email, you should:", choices:["Panic","Correct it and resend politely","Never email again","Send angry messages"], correct:1},
+    {text:"A good filename for your work is:", choices:["asdf123","finalfinalfinal","G5_Robotics_Quiz_Fred_18Feb","????"], correct:2},
+    {text:"What does ‘cloud’ storage mean?", choices:["Saving files online","Saving only on paper","Turning off Wi-Fi","A weather app"], correct:0},
+    {text:"Which is a safe place to save school work?", choices:["A random website","Google Drive / school platform","A stranger’s email","Public chat"], correct:1},
+    {text:"If your iPad freezes, you should first:", choices:["Throw it","Try closing the app and restarting","Delete everything","Remove the screen"], correct:1},
+    {text:"What does ‘mute’ do?", choices:["Turns sound off","Turns Wi-Fi off","Deletes apps","Brightens screen"], correct:0},
+    {text:"When you copy and paste from the internet, you should:", choices:["Pretend it’s yours","Give credit / use your own words","Hide it","Never learn"], correct:1},
+
+    {text:"Which is a strong rule for passwords?", choices:["Share it with friends","Use the same one everywhere","Use a long password and keep it secret","Write it on your desk"], correct:2},
+    {text:"What is ‘drag and drop’?", choices:["Throwing the iPad","Moving something by holding and sliding","Deleting a folder","Printing a page"], correct:1},
+    {text:"What does a ‘search bar’ do?", choices:["Plays music","Finds information on a site/app","Charges the iPad","Takes photos"], correct:1},
+    {text:"What is the purpose of a ‘folder’?", choices:["To organise files","To increase battery","To connect Wi-Fi","To print"], correct:0},
+    {text:"Which is a good way to keep your device safe?", choices:["Leave it on the floor","Use a cover and handle carefully","Pull the cable","Hit the screen"], correct:1},
+    {text:"What does ‘restart’ mean?", choices:["Turn off and on again","Break the iPad","Delete files","Call a friend"], correct:0},
+    {text:"Which is a safe online habit?", choices:["Click pop-ups","Use kind language and report problems","Share private info","Meet strangers"], correct:1},
+    {text:"What does ‘upload’ mean?", choices:["Send a file to the internet/cloud","Take a nap","Delete a file","Turn volume up"], correct:0},
+    {text:"What does ‘download’ mean?", choices:["Get a file from the internet to your device","Break a robot","Charge a battery","Print without ink"], correct:0},
+    {text:"What does a ‘robot arm’ usually do?", choices:["Moves objects","Plays music","Prints documents","Makes Wi-Fi"], correct:0},
+
+    {text:"If a robot does the wrong action, you should:", choices:["Change the instructions/program","Paint it","Add stickers","Turn volume up"], correct:0},
+    {text:"A good test for a program is:", choices:["Never run it","Run it and check if it works correctly","Delete it","Email it"], correct:1},
+    {text:"What is a ‘sequence’ in coding?", choices:["Random steps","Steps in the correct order","A battery","A screen"], correct:1},
+    {text:"What is ‘iteration’ in coding?", choices:["Repeating a process","Charging a device","Taking a photo","Typing a password"], correct:0},
+    {text:"Which Scratch block can stop everything?", choices:["Stop all","Move 10 steps","Say hello","Play sound"], correct:0},
+    {text:"In Scratch, ‘forever’ is used to:", choices:["Repeat code without stopping","Delete sprites","Change password","Turn Wi-Fi off"], correct:0},
+    {text:"In Scratch, ‘wait 1 second’ helps by:", choices:["Adding a pause","Making Wi-Fi faster","Saving storage","Turning sound off"], correct:0},
+    {text:"What is a ‘condition’ in coding?", choices:["A rule like IF something happens","A charger","A mouse","A printer"], correct:0},
+    {text:"An IF statement is used to:", choices:["Make a decision in code","Increase volume","Print a page","Draw a picture"], correct:0},
+    {text:"In Scratch, ‘touching’ is found in:", choices:["Sensing","Motion","Sound","Looks"], correct:0},
+
+    {text:"Which is an example of respectful online behavior?", choices:["Insults","Helping politely","Sharing passwords","Spamming"], correct:1},
+    {text:"What should you do if you forget your password?", choices:["Guess forever","Ask the teacher/parent to reset it","Use your friend’s account","Stop using devices"], correct:1},
+    {text:"Why do we name files properly?", choices:["To confuse ourselves","To find and organise work easily","To make Wi-Fi faster","To delete them"], correct:1},
+    {text:"A good way to improve typing is:", choices:["Never practise","Practise a little each day","Type with one finger only","Avoid home row"], correct:1},
+    {text:"Which is safest when using shared iPads?", choices:["Stay logged in","Log out after use","Share your password","Change settings"], correct:1},
+    {text:"What does ‘airplane mode’ do?", choices:["Turns off wireless connections","Charges faster","Deletes apps","Prints"], correct:0},
+    {text:"What is a ‘QR code’ used for?", choices:["A secret password","Quickly opening a link/info by scanning","Making sound louder","Printing"], correct:1},
+    {text:"If an app asks to access your camera, you should:", choices:["Allow always","Ask why and get permission if needed","Share your password","Ignore all rules"], correct:1},
+    {text:"A robot following a line uses a:", choices:["Line/colour sensor","Speaker","Keyboard","Printer"], correct:0},
+    {text:"What is the best first step in robotics building?", choices:["Glue everything immediately","Plan and check parts first","Turn off the battery","Run away"], correct:1},
   ];
 
-  const q = [];
-  for(let i=0;i<100;i++){
-    const t = templates[i % templates.length];
-    // small variation so questions aren't identical in text
-    const num = i+1;
-    q.push({
-      id: num,
-      text: t.q + " (Q" + num + ")",
-      choices: t.a.slice(),
-      correct: t.c
-    });
+  // ensure exactly 100 questions
+  if(Q.length !== 100){
+    // If you ever edit this list, this helps you catch it.
+    console.warn("Question bank count is", Q.length, "(expected 100)");
   }
-  return q;
+
+  return Q.map((item, i)=>({
+    id: i+1,
+    text: item.text,
+    choices: item.choices,
+    correct: item.correct
+  }));
 }
+
 const QUESTIONS = buildQuestions();
 
 /* =========================
@@ -250,7 +384,7 @@ const QUESTIONS = buildQuestions();
    ========================= */
 const state = {
   idx: 0,
-  answers: Array(100).fill(null),   // store choice index
+  answers: Array(100).fill(null),
   flagged: Array(100).fill(false),
   submitted: false,
   secondsLeft: 35*60,
@@ -288,7 +422,6 @@ function renderNav(){
    ========================= */
 function renderQuestion(){
   const q = QUESTIONS[state.idx];
-
   const answered = state.answers[state.idx];
   const flagged = state.flagged[state.idx];
 
@@ -301,7 +434,7 @@ function renderQuestion(){
         <div class="qtext">${escapeHtml(q.text)}</div>
         <div class="metaLine">${flagged ? "⚑ Flagged" : ""}</div>
       </div>
-      <div style="text-align:right;color:var(--muted);font-weight:800;font-size:13px">
+      <div style="text-align:right;color:var(--muted);font-weight:900;font-size:13px">
         ${learnerOk ? `Learner: ${escapeHtml(state.learner.full_name)} • ${escapeHtml(state.learner.class_name)} • Grade ${state.learner.grade}` : `Select class + learner to record details`}
       </div>
     </div>
@@ -309,7 +442,6 @@ function renderQuestion(){
     ${!learnerOk ? `<div class="notice">Please select a class and learner on the left. The quiz still works, but submission will be blocked until learner info is selected.</div>` : ""}
 
     <div class="choices" id="choices"></div>
-
     <div id="resultArea"></div>
   `;
 
@@ -321,7 +453,7 @@ function renderQuestion(){
       <input type="radio" name="q" ${answered===i ? "checked":""} ${state.submitted ? "disabled":""}/>
       <div><b>${String.fromCharCode(65+i)}.</b> ${escapeHtml(choiceText)}</div>
     `;
-    row.onclick = (e)=>{
+    row.onclick = ()=>{
       if(state.submitted) return;
       state.answers[state.idx] = i;
       renderAll();
@@ -346,7 +478,7 @@ function renderResultBox(){
 }
 
 function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return String(s).replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
 }
 
 /* =========================
@@ -365,7 +497,9 @@ function startTimerIfNeeded(){
     state.secondsLeft = Math.max(0, state.secondsLeft - 1);
     timeLeftEl.textContent = fmtTime(state.secondsLeft);
     if(state.secondsLeft === 0){
-      submitAll("Time is up (auto-submit).");
+      submitAll("Time is up (auto-submit).",
+        false
+      );
     }
   },1000);
 }
@@ -394,7 +528,7 @@ function countFlagged(){
 /* =========================
    SAVE / LOAD (localStorage)
    ========================= */
-const LS_KEY = "disa_mcq_v1";
+const LS_KEY = "disa_g5_mcq_v1";
 
 function saveAttempt(){
   const payload = {
@@ -492,7 +626,7 @@ $("resetBtn").onclick = resetAttempt;
 /* =========================
    SUPABASE: LOAD DROPDOWNS
    Table expected: public.learners
-   Columns: full_name, first_name, surname, class_name, grade
+   Columns: id, full_name, class_name, grade
    ========================= */
 async function loadClasses(){
   try{
@@ -503,7 +637,6 @@ async function loadClasses(){
 
     if(error) throw error;
 
-    // unique by class_name
     const seen = new Set();
     const classes = [];
     (data || []).forEach(r=>{
@@ -605,7 +738,6 @@ function renderAll(){
   loadAttempt();
   renderAll();
   loadClasses();
-  // if learner already chosen, timer should run
   if(state.learner.full_name && !state.submitted) startTimerIfNeeded();
 })();
 </script>
